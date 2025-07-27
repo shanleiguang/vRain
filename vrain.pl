@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #vRain中文古籍刻本风格直排电子书制作工具
-#by shanleiguang@gmail.com, 2025
+#by shanleiguang@gmail.com, 2025/07
 use strict;
 use warnings;
 
@@ -17,13 +17,24 @@ binmode(STDOUT, ':encoding(utf8)');
 binmode(STDERR, ':encoding(utf8)');
 
 my $software = 'vRain';
-my $version = 'v1.2';
+my $version = 'v1.3';
 
 #程序输入参数设置
 my %opts;
 
 getopts('hcvz:b:f:t:', \%opts);
 if(defined $opts{'h'}) { print_help(); exit; }
+
+#读取卷、回、页码等阿拉伯数字转为特定中文，如12->十二，103->百三
+my %zhnums;
+open ZHNUM, '< db/num2zh_jid.txt';
+while(<ZHNUM>) {
+	chomp;
+	$_ = decode('utf-8', $_);
+	my ($a, $b) = split /\|/, $_;
+	$zhnums{$a} = $b;
+}
+close(ZHNUM);
 
 my $book_id = $opts{'b'};
 my $from = $opts{'f'} ? $opts{'f'} : 1;
@@ -34,6 +45,7 @@ if(not -d "books/$book_id/text" ) { print "错误: 未发现该书籍文本目�
 if(not -f "books/$book_id/book.cfg") { print "错误：未发现该书籍排版配置文件'books/$book_id/book.cfg'！\n"; exit; }
 
 print_welcome();
+
 if(defined $opts{'z'}) { print "注意：-z 测试模式，仅输出", $opts{'z'}, "页用于调试排版参数！\n"; }
 
 #读取书籍配置文件
@@ -93,10 +105,11 @@ my ($cover_author_font_size, $cover_author_y) = ($book{'cover_author_font_size'}
 my $cover_font_color = $book{'cover_font_color'};
 #叶心标题、页码字体
 my ($if_tpcenter, $title_postfix, $title_directory) = ($book{'if_tpcenter'}, $book{'title_postfix'}, $book{'title_directory'});
-my ($title_font_size, $title_font_color, $title_y) = ($book{'title_font_size'}, $book{'title_font_color'}, $book{'title_y'});
+my ($title_font_size, $title_font_color, $title_y, $title_ydis) = ($book{'title_font_size'}, $book{'title_font_color'}, $book{'title_y'}, $book{'title_ydis'});
 my ($pager_font_size, $pager_font_color, $pager_y) = ($book{'pager_font_size'}, $book{'pager_font_color'}, $book{'pager_y'});
 #书名号是否处理为侧线
 my $if_book_vline = $book{'if_book_vline'};
+my ($bline_w, $bline_c) = ($book{'book_line_width'}, $book{'book_line_color'});
 #标点符号替代规则
 my ($exp_replace_comma, $exp_replace_number) = ($book{'exp_replace_comma'}, $book{'exp_replace_number'});
 #标点符号过滤规则
@@ -315,6 +328,7 @@ my %outlines;
 my ($pid, $pcnt) = (0, 0); #非常重要：$pcnt，每页写入文字的当前标准字位指针
 my ($flag_tbook, $flag_rbook) = (0, 0); #正文、批注中书名号标记
 foreach my $tid ($from..$to) {
+	last if(defined $opts{'z'} and $pid == $opts{'z'});
 	print "读取'books/$book_id/text/'目录下第 $tid "."个文本文件...\n";
 	my $dat = $dats[$tid];
 	my @chars = split //, $dat;
@@ -323,14 +337,9 @@ foreach my $tid ($from..$to) {
 	my (@tpchars, @last, $tptitle);
 
 	if(defined $title_postfix) {
-		my $cid = $tid;
-		$cid-- if($if_text000 == 1);
-		my $cid_zh = get_cid_zh($cid);
-		$cid_zh = '十' if($cid == 10);
-		$cid_zh = '百' if($cid == 100);
-		$cid_zh =~ s/^一(.)$/十$1/;
+		my $cid = ($if_text000 == 1) ? $tid-1 : $tid;
 		my $tpost = $title_postfix;
-		$tpost =~ s/X/$cid_zh/;
+		$tpost =~ s/X/$zhnums{$cid}/;
 		$tpost = '序' if($cid == 0);	
 		$tpost = '附' if($if_text999 == 1 and $tid == $#dats);		
 		@tpchars = split //, $title.$tpost;
@@ -338,10 +347,7 @@ foreach my $tid ($from..$to) {
 		@tpchars = split //, $title;
 	}
 	$tptitle = join '', @tpchars;
-
-	if($tptitle) {
-		$outlines{$tptitle} = $pid+2 if(not $outlines{$tptitle});
-	}
+	$outlines{$tptitle} = $pid+2 if(not $outlines{$tptitle}); #添加到目录
 	print "创建新PDF页[$pid]...\n";
 	$vpage = $vpdf->page();
 	$vpage->object($vpimg, 0, 0); #添加背景图
@@ -349,7 +355,7 @@ foreach my $tid ($from..$to) {
 	foreach my $i (0..$#tpchars) {
 		my $fs = $title_font_size;
 		my $fn = get_font($tpchars[$i], \@fns);
-		my ($fx, $fy) = ($canvas_width/2-$fs/2, $title_y-$fs*$i*1.2);
+		my ($fx, $fy) = ($canvas_width/2-$fs/2, $title_y-$fs*$i*$title_ydis);
 		$fx=-$fs/2 if(defined $if_tpcenter and $if_tpcenter == 0); #标题不居中时位于左侧
 		$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color) if($lc_width > 0);
 	}
@@ -361,52 +367,12 @@ foreach my $tid ($from..$to) {
 			$pid++;
 			$pcnt = 0;
 
-			my $px;
-            my $py = $pager_y;
-            my $ps = $pager_font_size;
-            my $pid_zh = get_cid_zh($pid);
-            my @pchars_zh = split //, $pid_zh;
-            if($pid =~ m/^\d$/) {
-            	$px = $canvas_width/2-$ps/2;
-            	$px = -$ps/2 if(defined $if_tpcenter and $if_tpcenter == 0);
-                $vpage->text->textlabel($px, $py, $vfonts{$fn1}, $ps, $pid_zh, -color => $pager_font_color) if($lc_width > 0);
-            }
-            if($pid =~ m/^\d{2}$/) {
-                if($pid == 10) {
-                	$pid_zh = '十';
-                	$px = $canvas_width/2-$ps/2;
-                	$px = -$ps/2 if(defined $if_tpcenter and $if_tpcenter == 0);
-                    $vpage->text->textlabel($px, $py, $vfonts{$fn1}, $ps, $pid_zh, -color => $pager_font_color) if($lc_width > 0);
-                } else {
-                	$pchars_zh[0] = '十' if($pchars_zh[0] eq '一');
-                	if(defined $if_tpcenter and $if_tpcenter == 0) {
-                		$px = -$ps/2;
-                		$vpage->text->textlabel($px, $py, $vfonts{$fn1}, $ps, $pchars_zh[0], -color => $pager_font_color) if($lc_width > 0);
-                		$vpage->text->textlabel($px, $py-$ps, $vfonts{$fn1}, $ps, $pchars_zh[1], -color => $pager_font_color) if($lc_width > 0);
-                	} else {
-                		$px = $canvas_width/2-$ps;
-    	                $pid_zh = $pchars_zh[1].$pchars_zh[0];
-        	            $vpage->text->textlabel($px, $py, $vfonts{$fn1}, $ps, $pid_zh, -color => $pager_font_color) if($lc_width > 0);
-        	        }
-                }
-            }
-            if($pid =~ m/^\d{3}$/) {
-                if($pid == 100) {
-                	$px = $canvas_width/2-$ps/2;
-                    $vpage->text->textlabel($px, $py, $vfonts{$fn1}, $ps, '百', -color => $pager_font_color) if($lc_width > 0);
-                } else {
-                    $pchars_zh[0] = '百' if($pchars_zh[0] eq '一');
-                    if(defined $if_tpcenter and $if_tpcenter == 0) {
-                    	$px = -$ps/2;
-                    	$vpage->text->textlabel($px, $py, $vfonts{$fn1}, $ps, $pchars_zh[0], -color => $pager_font_color) if($lc_width > 0);
-                		$vpage->text->textlabel($px, $py+$ps, $vfonts{$fn1}, $ps, $pchars_zh[1], -color => $pager_font_color) if($lc_width > 0);
-                		$vpage->text->textlabel($px, $py+$ps*2, $vfonts{$fn1}, $ps, $pchars_zh[2], -color => $pager_font_color) if($lc_width > 0);
-                    } else {
-	                    $vpage->text->textlabel($canvas_width/2, $py, $vfonts{$fn1}, $ps, $pchars_zh[0]);
-    	                $vpage->text->textlabel($canvas_width/2-$ps*0.75, $py+$ps/2, $vfonts{$fn1}, $ps*0.75, $pchars_zh[1], -color => $pager_font_color) if($lc_width > 0);
-        	            $vpage->text->textlabel($canvas_width/2-$ps*0.75, $py-$ps/2, $vfonts{$fn1}, $ps*0.75, $pchars_zh[2], -color => $pager_font_color) if($lc_width > 0);
-        	        }
-                }
+            my @pchars_zh = split //, $zhnums{$pid};
+            foreach my $i (0..$#pchars_zh) {
+            	my $px = $canvas_width/2-$pager_font_size/2;
+            	my $py = $pager_y - $pager_font_size*$i*1.1;
+            	my $pc = $pchars_zh[$i];
+            	$vpage->text->textlabel($px, $py, $vfonts{$fn1}, $pager_font_size, $pc, -color => $pager_font_color);
             }
             last if(not scalar @chars); #所有字符处理完时退出While循环
 			print "创建新PDF页[$pid]...\n";
@@ -498,8 +464,8 @@ foreach my $tid ($from..$to) {
 						my $pline = $vpage->gfx();
 						my $ply = $fy+$rh*0.7;
 						$ply = $canvas_height-$margins_top-5 if($ply >= $canvas_height-$margins_top);
-						$pline->linewidth(1);
-						$pline->strokecolor($fcolor);
+						$pline->linewidth($bline_w);
+						$pline->strokecolor($bline_c);
 						$pline->move($fx-1, $fy-$rh*0.3);
 						$pline->line($fx-1, $fy-$rh*0.3, $fx-1, $ply);
 						$pline->stroke();
@@ -525,6 +491,12 @@ foreach my $tid ($from..$to) {
 		if($char eq '%') {
 			shift @chars for (1..$row_num-1); #跳过%后补齐列高的空格
 			$pcnt = $page_chars_num; goto RCHARS;
+		}
+		if($char eq '&') { #跳至页最后一列
+			shift @chars for (1..$row_num-1); #跳过&后补齐列高的空格
+			if($pcnt <= $page_chars_num-$row_num+1) {
+				$pcnt = $page_chars_num-$row_num; goto RCHARS;
+			}
 		}
 		if($char eq '《') {
 			$flag_tbook = 1;
@@ -579,15 +551,14 @@ foreach my $tid ($from..$to) {
 				}
 				$fcolor = 'blue' if(defined $opts{'z'} and $fn ne $fn1);
 				#print "$char -> $fn\n";
-				#$fy-= $fsize*0.2 if($fn eq 'DaMengHan-2.ttf');
 				$vpage->text()->textlabel($fx, $fy, $vfonts{$fn}, $fsize, $char, -rotate => $fdgrees, -color => $fcolor);
 				if(defined $if_book_vline and $if_book_vline == 1) {
 					if($flag_tbook == 1) { #书名侧边线
 						my $pline = $vpage->gfx();
 						my $ply = $fy+$rh*0.7;
 						$ply = $canvas_height-$margins_top-5 if($ply >= $canvas_height-$margins_top);
-						$pline->linewidth(2);
-						$pline->strokecolor($fcolor);
+						$pline->linewidth($bline_w);
+						$pline->strokecolor($bline_c);
 						$pline->move($fx, $fy-$rh*0.3);
 						$pline->line($fx-2, $fy-$rh*0.3, $fx-2, $ply);
 						$pline->stroke();
@@ -654,7 +625,7 @@ if(defined $opts{'c'}) {
 sub print_welcome {
 	print '-'x60, "\n";
 	print "\t$software $version"."，兀雨古籍刻本电子书制作工具\n";
-	print "\t\t作者：兀雨书屋【小红书】\n";
+	print "\t作者：GitHub\@shanleiguang 小红书\@兀雨书屋\n";
 	print '-'x60, "\n";
 }
 
@@ -669,7 +640,7 @@ sub print_help {
 	  \t书籍文本需保存在书籍ID的text目录下，多文本时采用001、002...不间断命名以确保顺序处理
 	-f\t书籍文本的起始序号，注意不是文件名的数字编号，而是顺序排列的序号
 	-t\t书籍文本的结束序号，注意不是文件名的数字编号，而是顺序排列的序号
-		作者：兀雨书屋【小红书】，2025
+		作者：GitHub\@shanleiguang, 小红书\@兀雨书屋，2025
 END
 }
 
