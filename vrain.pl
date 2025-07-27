@@ -357,7 +357,7 @@ foreach my $tid ($from..$to) {
 		my $fn = get_font($tpchars[$i], \@fns);
 		my ($fx, $fy) = ($canvas_width/2-$fs/2, $title_y-$fs*$i*$title_ydis);
 		$fx=-$fs/2 if(defined $if_tpcenter and $if_tpcenter == 0); #标题不居中时位于左侧
-		$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color) if($lc_width > 0);
+		$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color);
 	}
 	#标注文本采用双排后，每页、每列文字数是变化的，页数、列数不能提前确定，需逐个字符处理，直至全部字符处理完，期间指针到达整页时创新新页
 	while(1) {
@@ -369,10 +369,12 @@ foreach my $tid ($from..$to) {
 
             my @pchars_zh = split //, $zhnums{$pid};
             foreach my $i (0..$#pchars_zh) {
-            	my $px = $canvas_width/2-$pager_font_size/2;
-            	my $py = $pager_y - $pager_font_size*$i*1.1;
+            	my $ps = $pager_font_size;
             	my $pc = $pchars_zh[$i];
-            	$vpage->text->textlabel($px, $py, $vfonts{$fn1}, $pager_font_size, $pc, -color => $pager_font_color);
+            	my $px = $canvas_width/2-$pager_font_size/2;
+            	my $py = $pager_y - $pager_font_size*$i*$title_ydis;
+            	$px=-$ps/2 if(defined $if_tpcenter and $if_tpcenter == 0); #标题不居中时位于左侧
+            	$vpage->text->textlabel($px, $py, $vfonts{$fn1}, $ps, $pc, -color => $pager_font_color);
             }
             last if(not scalar @chars); #所有字符处理完时退出While循环
 			print "创建新PDF页[$pid]...\n";
@@ -381,9 +383,9 @@ foreach my $tid ($from..$to) {
 			foreach my $i (0..$#tpchars) {
 				my $fs = $title_font_size;
 				my $fn = get_font($tpchars[$i], \@fns);
-				my ($fx, $fy) = ($canvas_width/2-$fs/2, $title_y-$fs*$i*1.2);
+				my ($fx, $fy) = ($canvas_width/2-$fs/2, $title_y-$fs*$i*$title_ydis);
 				$fx=-$fs/2 if(defined $if_tpcenter and $if_tpcenter == 0);
-				$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color) if($lc_width > 0);
+				$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color);
 			}
 		}
 		#优先处理标注文本页内跨列、跨页的情况
