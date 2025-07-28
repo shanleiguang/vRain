@@ -1,6 +1,8 @@
 
 ![image](https://github.com/shanleiguang/vRain/blob/main/cover.png)
 
+[**使用手册**](https://github.com/shanleiguang/vRain/wiki)
+
 # vRain is  
 
 - vRain是一款面向读者的中文古籍刻本风格直排电子书制作工具。
