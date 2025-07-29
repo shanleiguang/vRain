@@ -3,10 +3,10 @@
 
 [**使用手冊**](https://github.com/shanleiguang/vRain/wiki)
 
-[**定製服務**](https://github.com/sponsors/shanleiguang) 
-- 個性化定製開發需求，如；個人化版面、縮進排版腳本、文本預處理腳本、圖片批量處理腳本等。
-- 幫你定製指定風格及內容的古籍刻本風格電子書；
-- 使用及二次開發指導。
+# [**定製服務**](https://github.com/sponsors/shanleiguang) 
+- 為你定製指定風格及內容的古籍刻本風格電子書。
+- 個性化定製開發需求，如；新版面、字符添加圓角底框、文字大小縮放、縮進排版等文本預處理腳本、圖片批量處理腳本等。
+- 使用或二次開發指導。
 
 # vRain is  
 
