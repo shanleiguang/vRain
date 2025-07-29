@@ -5,13 +5,13 @@
 
 # vRain is  
 
-- vRain是一款面向读者的中文古籍刻本风格直排电子书制作工具。
-- 参考中文古籍雕版刻本制作过程，首先生成书叶背景图，根据行数、每行字数形成一个自右向左、自上而下的位置数组，然后把文本逐字打印到对应位置，打满一页、新建一页，直到所有文字处理完。
-- 文本编辑准备和自动排版生成分离，使用者将主要精力用在文本编辑准备。
-- 一个背景图对应一个配置文件。一本书对应一个配置文件。
-- 百万字书籍十几分钟生成。
-- 采用Perl语言开发，需安装Image::Magick和PDF::Builder等模块。
-- 小红书主页：兀雨书屋。
+- vRain是一款面向讀者的中文古籍刻本風格直排電子書製作工具。
+- 參考中文古籍雕版刻本製作過程，首先生成書葉背景圖，根據行數、每行字數形成一個自右向左、自上而下的位置數組，然後把文本逐字打印到對應位置，打滿一頁、新建一頁，直到所有文字處理完。
+- 文本編輯準備和自動排版生成分離，使用者將主要精力用在文本編輯準備。
+- 一個背景圖對應一個配置文件。一本書對應一個配置文件。
+- 百萬字書籍十幾分鐘生成。
+- 採用Perl語言開發，需安裝Image::Magick和PDF::Builder等模塊。
+- 小紅書主頁：兀雨書屋。
 
 - vRain is a Chinese classical ancient text-style ebook production tool for readers.
 - Referencing the production process of Chinese ancient books, it first generates a background image for the pages, and creates a position array that maps from right to left and top to bottom based on the number of lines and characters perline. Then, prints the text character by character to the corresponding positions, filling one page, creating a new page, until all text is processed.
