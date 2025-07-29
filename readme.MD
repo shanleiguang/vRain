@@ -1,7 +1,7 @@
 
 ![image](https://github.com/shanleiguang/vRain/blob/main/cover.png)
 
-[**使用手冊**](https://github.com/shanleiguang/vRain/wiki) [**更多樣例**](https://github.com/shanleiguang/vRain/vBooks)
+[**使用手冊**](https://github.com/shanleiguang/vRain/wiki) [**更多樣例**](https://github.com/shanleiguang/vBooks)
 
 ## [**定製服務**](https://github.com/sponsors/shanleiguang) 
 - 為你定製指定風格及內容的古籍刻本風格電子書。
