@@ -1,15 +1,7 @@
 
 ![image](https://github.com/shanleiguang/vRain/blob/main/cover.png)
 
-[**使用手冊**](https://github.com/shanleiguang/vRain/wiki) [**更多樣例**](https://github.com/shanleiguang/vBooks)
-
-## [**定製服務**](https://github.com/sponsors/shanleiguang) 
-
-- 為你定製指定風格及內容的古籍刻本風格電子書。
-- 個性化定製開發需求，如；新版面、字符添加圓角底框、文字大小縮放、縮進排版等文本預處理腳本、圖片批量處理腳本等。
-- 使用或二次開發指導。
-- 或微信联系（不闲聊）  
->>![image](https://github.com/shanleiguang/vRain/blob/main/wechat.jpg)
+[**使用手冊**](https://github.com/shanleiguang/vRain/wiki)   [**更多樣例**](https://github.com/shanleiguang/vBooks)
 
 ## 中文古籍数字复刻计划 
 ## Digital Reproduction Project of Chinese Ancient Books
