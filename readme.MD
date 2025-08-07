@@ -59,8 +59,8 @@
 - 儘量不要直接修改原始文本，簡單標點替換過濾殼編輯book.cfg的標點符號處理規則實現，或將原始文本保存到tmp目錄，使用文本預處理腳本處理後存入text目錄。
 
 ## 赞助支持 Other ways to sponsor
-如果您覺得本工具對您的工作或生活有些微幫助，請給予必要的支持（一杯咖啡），我也有動力繼續完善更新，謝謝！贊助後，您可添加微信諮詢使用或代碼解讀等相關問題。
-If you feel that this tool is a little helpful to your work or life, please give the necessary support(a cup of coffee). After sponsorship, you can add WeChat consultation usage or code interpretation and other related questions
+如果您覺得本工具對您的工作或生活有些微幫助，請給予必要的支持（一杯咖啡），我也有動力繼續完善更新，謝謝！贊助後，您可添加微信諮詢使用或代碼解讀等相關問題。  
+If you feel that this tool is a little helpful to your work or life, please give the necessary support. After sponsorship, you can add WeChat consultation usage or code interpretation and other related questions
 ![image](https://github.com/shanleiguang/vRain/blob/main/sponsor.png)
 
 ## 更新紀錄
