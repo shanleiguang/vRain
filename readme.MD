@@ -22,14 +22,6 @@
 - 採用Perl語言開發，需安裝Image::Magick和PDF::Builder等模塊。
 - 小紅書主頁：兀雨書屋。
 
-- vRain is a Chinese classical ancient text-style ebook production tool for readers.
-- Referencing the production process of Chinese ancient books, it first generates a background image for the pages, and creates a position array that maps from right to left and top to bottom based on the number of lines and characters perline. Then, prints the text character by character to the corresponding positions, filling one page, creating a new page, until all text is processed.
-- Text editing preparation is separated from automatic typesetting generation, allowing users to focus mainly on text editing preparation.
-- One background image corresponds to one configuration file. One book corresponds to one configuration file.
-- Books with millions of characters can be generated in just a few minutes.
-- Developed using Perl language, it requires the installation of modules like Image::Magick and PDF::Builder.
-- Rednote: 兀雨書屋.
-
 ## Example
 
 ![image](https://github.com/shanleiguang/vBooks/blob/main/002.png)
@@ -54,13 +46,13 @@
 
 ## 赞助支持 Sponsorship
 如果您覺得本工具對您的工作或生活有些微幫助，請給予必要的支持，我也有動力繼續完善更新，謝謝！ 初次贊助後我講邀請您訪問vRainPro Private項目一個月時間，續訂可通過Sponsor按鈕或該私有項目頁面提示，較Pbulic項目Private項目有以下不同：
->>微信諮詢答疑，包括運行環境調試、如何使用、代碼解讀等相關問題；
->>代碼持續優化，註釋更詳細；
->>更多古籍排版實用標籤，如正文字體的二次縮放、文字添加底框（圓角方框/圓形框）等；
->>更多模擬背景圖，如甲骨、碑拓、竹簡、做舊、手機壁紙等；
->>更多高質量樣例；
->>持續分享自製全套成書，
-If you feel that this tool is a little helpful to your work or life, please give the necessary support. After sponsorship, you can add WeChat consultation usage or code interpretation and other related questions.
+>>微信諮詢答疑，包括運行環境調試、如何使用、代碼解讀等相關問題；  
+>>代碼持續優化，註釋更詳細；  
+>>更多古籍排版實用標籤，如正文字體的二次縮放、文字添加底框（圓角方框/圓形框）等；  
+>>更多模擬背景圖，如甲骨、碑拓、竹簡、做舊、手機壁紙等；  
+>>更多高質量樣例；  
+>>持續分享自製全套成書，  
+
 ![image](https://github.com/shanleiguang/vRain/blob/main/sponsor.png)
 
 ## 更新紀錄
