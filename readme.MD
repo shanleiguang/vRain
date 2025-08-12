@@ -45,7 +45,7 @@
 - 保留字符：'@'代表空格，'【】'內代表雙排批注文字，'%'代表換葉符，'$'代表換頁符（半葉），'&'代表下行文字居葉末，文本行首'S+數字'代表整段縮幾個字符（需indentxt腳本做預處理）。
 
 ## 赞助支持 Sponsorship
-![image](https://github.com/shanleiguang/vRain/blob/main/sponsor.png)
+![image](https://github.com/shanleiguang/vRain/blob/main/sponsor.png)  
 如果您覺得本工具對您的工作或生活有些微幫助，請給予必要的支持，我也有動力繼續完善更新，謝謝！ 初次贊助後我講邀請您訪問vRainPro Private項目一個月時間，續訂可通過Sponsor按鈕或該私有項目頁面提示，較Pbulic項目Private項目有以下不同：
 >>微信諮詢答疑，包括運行環境調試、如何使用、代碼解讀等相關問題；  
 >>代碼持續優化，註釋更詳細；  
