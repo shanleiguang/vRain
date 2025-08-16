@@ -13,7 +13,7 @@
 
 ## vRain is  
 
-- vRain是该復刻計劃的主要工具，此外還有古籍印章製作工具 [vYinn殷人](https://github.com/shanleiguang/vYinn) 、古棋譜製作工具 [vQi](https://github.com/shanleiguang/vQi) 。
+- vRain是该復刻計劃的主要工具，此外還有古籍印章製作工具 [vYinn殷人](https://github.com/shanleiguang/vYinn) 、古棋譜製作工具 [vQi](https://github.com/shanleiguang/vQi) 、古籍掃描圖像變形糾正工具[vModou墨斗](https://github.com/shanleiguang/vModouPreview)、農曆日曆製作工具、古籍風格日記本電子書製作工具等等。
 - vRain是一款面向讀者的中文古籍刻本風格直排電子書製作工具。
 - 參考中文古籍雕版刻本製作過程，首先生成書葉背景圖，根據行數、每行字數形成一個自右向左、自上而下的位置數組，然後把文本逐字打印到對應位置，打滿一頁、新建一頁，直到所有文字處理完。
 - 文本編輯準備和自動排版生成分離，使用者將主要精力用在文本編輯準備。
@@ -43,15 +43,13 @@
 ## 赞助支持 Sponsorship
 ![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
 如果您覺得本工具對您的工作或生活有些微幫助，請給予必要的支持，我也有動力繼續完善更新，謝謝！   
-贊助後我將邀請您訪問vRainPro等私有庫項目（一個月時間），續訂可通過Sponsor按鈕或該私有項目頁面提示。較Pbulic項目Private項目有以下不同：
+贊助後我將邀請您訪問vRainPro私有庫項目（一個月時間），續訂可通過Sponsor按鈕或該私有項目頁面提示。較Pbulic項目Private項目有以下不同：
 >>微信或郵件諮詢答疑，包括運行環境調試、使用協助、代碼解讀、二次開發合作等相關問題；  
 >>代碼持續更新，註釋更詳細；  
 >>更多古籍排版實用標籤，如正文字體二次縮放、文字添加底框（圓角方框/圓形框）、文本預處理工具等；  
 >>更多模擬背景圖，如甲骨、碑拓、竹簡、做舊、手機壁紙等；  
 >>更多高質量樣例，如何vRain+vYinn結合應用案例；  
 >>**訂購作者自製高質量古籍數字復刻全套成書**；  
->>更多實用工具或相關開發樣例，如vModou兀雨墨斗（古籍掃描圖變形糾正工具）、vLunnar農曆日曆製作工具、vDaiary日記本製作案例等。  
-![image](https://github.com/shanleiguang/vRain/blob/main/images/011.png)
 
 ## 更新紀錄
 
