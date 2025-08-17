@@ -50,7 +50,7 @@
 >>更多模擬背景圖，如甲骨、碑拓、竹簡、做舊、手機壁紙等；  
 >>更多高質量樣例，如何vRain+vYinn結合應用案例；  
 >>**訂購作者自製高質量古籍數字復刻全套成書**；  
-![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
+![image width=>"600"](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
 
 ## 更新紀錄
 
