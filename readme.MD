@@ -1,7 +1,7 @@
 
 ![image](https://github.com/shanleiguang/vRain/blob/main/cover.png)
 
-[**運行環境**](https://github.com/shanleiguang/vRain/wiki/Runtime)  [**使用手冊**](https://github.com/shanleiguang/vRain/wiki)   [**更多樣例**](https://github.com/shanleiguang/vBooks)
+[**運行環境**](https://github.com/shanleiguang/vRain/wiki/Runtime)  [**使用手冊**](https://github.com/shanleiguang/vRain/wiki)   [**更多樣例**](https://github.com/shanleiguang/vBooks)  [**私库介绍**]](https://github.com/shanleiguang/vRain/wiki/Private)
 
 ## 中文古籍数字复刻计划 
 ## Digital Reproduction Project of Chinese Ancient Books
