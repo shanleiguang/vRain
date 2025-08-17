@@ -41,7 +41,7 @@
 - 保留字符：'@'代表空格，'【】'內代表雙排批注文字，'%'代表換葉符，'$'代表換頁符（半葉），'&'代表下行文字居葉末，文本行首'S+數字'代表整段縮幾個字符（需indentxt腳本做預處理）。
 
 ## 赞助支持 Sponsorship
-![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
+ [**私庫介紹**](https://github.com/shanleiguang/vRain/wiki/Private)  
 如果您覺得本工具對您的工作或生活有些微幫助，請給予必要的支持，我也有動力繼續完善更新，謝謝！   
 贊助後我將邀請您訪問vRainPro私有庫項目，一個月後續訂可通過Sponsor按鈕或該私有項目頁面提示。較Pbulic項目Private項目有以下不同：
 >>微信或郵件諮詢答疑，包括運行環境調試、使用協助、代碼解讀、二次開發合作等相關問題；  
@@ -50,6 +50,7 @@
 >>更多模擬背景圖，如甲骨、碑拓、竹簡、做舊、手機壁紙等；  
 >>更多高質量樣例，如何vRain+vYinn結合應用案例；  
 >>**訂購作者自製高質量古籍數字復刻全套成書**；  
+![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
 
 ## 更新紀錄
 
