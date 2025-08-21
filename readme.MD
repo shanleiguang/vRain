@@ -1,7 +1,7 @@
 
 ![image](https://github.com/shanleiguang/vRain/blob/main/cover.png)
 
-[**運行環境**](https://github.com/shanleiguang/vRain/wiki/Runtime)  [**使用手冊**](https://github.com/shanleiguang/vRain/wiki)   [**更多樣例**](https://github.com/shanleiguang/vBooks)  [**私庫介紹**](https://github.com/shanleiguang/vRain/wiki/Private)
+[**運行環境**](https://github.com/shanleiguang/vRain/wiki/Runtime)  [**使用手冊**](https://github.com/shanleiguang/vRain/wiki)   [**更多樣例**](https://github.com/shanleiguang/vBooks)  [**更多開源項目**](https://github.com/shanleiguang/vRain/wiki/More)
 
 ## 中文古籍数字复刻计划 
 ## Digital Reproduction Project of Chinese Ancient Books
@@ -41,9 +41,8 @@
 - 保留字符：'@'代表空格，'【】'內代表雙排批注文字，'%'代表換葉符，'$'代表換頁符（半葉），'&'代表下行文字居葉末，文本行首'S+數字'代表整段縮幾個字符（需indentxt腳本做預處理）。
 
 ## 赞助支持 Sponsorship
-### 更多有趣內容，移步[**這裡**](https://github.com/shanleiguang/vRain/wiki/More)  
 如果您覺得本工具對您的工作或生活有些微幫助，請給予必要支持，謝謝！  
-![image width=>"500"](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
+![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
 
 ## 更新紀錄
 
