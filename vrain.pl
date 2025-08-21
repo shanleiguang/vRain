@@ -12,12 +12,14 @@ use POSIX qw(strftime);
 use Encode;
 use utf8;
 
+$| = 1; #autoflush
+
 binmode(STDIN, ':encoding(utf8)');
 binmode(STDOUT, ':encoding(utf8)');
 binmode(STDERR, ':encoding(utf8)');
 
 my $software = 'vRain';
-my $version = 'v1.3';
+my $version = 'v1.4';
 
 #程序输入参数设置
 my %opts;
@@ -70,13 +72,15 @@ print "\t是否无标点：$book{'if_nocomma'}\n";
 print "\t标点归一化：$book{'if_onlyperiod'}\n";
 close(BCONFIG);
 
-#书籍标题、作者、背景图ID、正文及批注主辅字体
+#书籍标题、作者、背景图ID
 my ($author, $title) = ($book{'author'}, $book{'title'});
 my ($canvas_id, $row_num, $row_delta_y) = ($book{'canvas_id'}, $book{'row_num'}, $book{'row_delta_y'});
-my ($fn1, $fn2, $fn3, $fn4) = ($book{'font1'}, $book{'font2'}, $book{'font3'}, $book{'font4'});
-my ($fnr1, $fnr2, $fnr3, $fnr4) = ($book{'font1_rotate'}, $book{'font2_rotate'}, $book{'font3_rotate'}, $book{'font4_rotate'});
-my ($fs1_text, $fs2_text, $fs3_text, $fs4_text) = ($book{'text_font1_size'}, $book{'text_font2_size'}, $book{'text_font3_size'}, $book{'text_font4_size'});
-my ($fs1_comm, $fs2_comm, $fs3_comm, $fs4_comm) = ($book{'comment_font1_size'}, $book{'comment_font2_size'}, $book{'comment_font3_size'}, $book{'comment_font4_size'});
+#字体
+my ($fn1, $fn2, $fn3, $fn4, $fn5) = ($book{'font1'}, $book{'font2'}, $book{'font3'}, $book{'font4'}, $book{'font5'});
+my ($fnr1, $fnr2, $fnr3, $fnr4, $fnr5) = ($book{'font1_rotate'}, $book{'font2_rotate'}, $book{'font3_rotate'}, $book{'font4_rotate'}, $book{'font5_rotate'});
+my ($fs1_text, $fs2_text, $fs3_text, $fs4_text, $fs5_text) = ($book{'text_font1_size'}, $book{'text_font2_size'}, $book{'text_font3_size'}, $book{'text_font4_size'}, $book{'text_font5_size'});
+my ($fs1_comm, $fs2_comm, $fs3_comm, $fs4_comm, $fs5_comm) = ($book{'comment_font1_size'}, $book{'comment_font2_size'}, $book{'comment_font3_size'}, $book{'comment_font4_size'}, $book{'comment_font5_size'});
+my ($tfsarray, $cfsarray) = ($book{'text_fonts_array'}, $book{'comment_fonts_array'}); #正文及批注文字的字体数组
 my $try_st = $book{'try_st'}; #是否进行简繁转换，有可能改善字体支持情况
 
 if(not $canvas_id) { print "错误：未定义背景图ID 'canvas_id'！\n"; exit; }
@@ -87,15 +91,26 @@ if($fn1 and not -f "fonts/$fn1") { print "错误：未发现字体'fonts/$fn1'�
 if($fn2 and not -f "fonts/$fn2") { print "错误：未发现字体'fonts/$fn2'！\n"; exit; }
 if($fn3 and not -f "fonts/$fn3") { print "错误：未发现字体'fonts/$fn3'！\n"; exit; }
 if($fn4 and not -f "fonts/$fn4") { print "错误：未发现字体'fonts/$fn4'！\n"; exit; }
+if($fn5 and not -f "fonts/$fn5") { print "错误：未发现字体'fonts/$fn5'！\n"; exit; }
 
 my @tchars = split //, $title;
 my @achars = split //, $author;
-my (@fns, %fonts);
+my (@fns, @tfns, @cfns, %fonts);
 
 if($fn1) { push @fns, $fn1; $fonts{$fn1} = [$fs1_text, $fs1_comm, $fnr1]; }
 if($fn2) { push @fns, $fn2; $fonts{$fn2} = [$fs2_text, $fs2_comm, $fnr2]; }
 if($fn3) { push @fns, $fn3; $fonts{$fn3} = [$fs3_text, $fs3_comm, $fnr3]; }
 if($fn4) { push @fns, $fn4; $fonts{$fn4} = [$fs4_text, $fs4_comm, $fnr4]; }
+if($fn5) { push @fns, $fn5; $fonts{$fn5} = [$fs5_text, $fs5_comm, $fnr5]; }
+
+#正文字体数组
+foreach my $fid (split //, $tfsarray) {
+	push @tfns, $fns[$fid-1];
+}
+#批注字体数组
+foreach my $fid (split //, $cfsarray) {
+	push @cfns, $fns[$fid-1];
+}
 
 #正文、批注文字颜色
 my ($text_font_color, $comment_font_color) = ($book{'text_font_color'}, $book{'comment_font_color'});
@@ -117,6 +132,7 @@ my $exp_delete_comma = $book{'exp_delete_comma'};
 #无标点符号模式、标点符号归一化模式
 my ($if_nocomma, $if_onlyperiod) = ($book{'if_nocomma'}, $book{'if_onlyperiod'});
 my ($exp_nocomma, $exp_onlyperiod) = ($book{'exp_nocomma'}, $book{'exp_onlyperiod'});
+my $onlyperiod_color = $book{'onlyperiod_color'}; #归一化模式下句号颜色
 #正文中不占字符位的标点符号、旋转直排的标点符号
 my ($text_comma_nop, $text_comma_90) = ($book{'text_comma_nop'}, $book{'text_comma_90'});
 my ($text_comma_nop_size, $text_comma_nop_x, $text_comma_nop_y) = 
@@ -262,6 +278,7 @@ $vfonts{$fn1} = $vpdf->ttfont("fonts/$fn1", -noembed=>0, -nosubset=>1) if($fn1);
 $vfonts{$fn2} = $vpdf->ttfont("fonts/$fn2", -noembed=>0, -nosubset=>1) if($fn2);
 $vfonts{$fn3} = $vpdf->ttfont("fonts/$fn3", -noembed=>0, -nosubset=>1) if($fn3);
 $vfonts{$fn4} = $vpdf->ttfont("fonts/$fn4", -noembed=>0, -nosubset=>1) if($fn4);
+$vfonts{$fn5} = $vpdf->ttfont("fonts/$fn5", -noembed=>0, -nosubset=>1) if($fn5);
 
 #添加PDF文档信息
 my $meta_title = $title;
@@ -310,14 +327,14 @@ if(-f "books/$book_id/cover.jpg") {
 	#打印封面标题文字
 	foreach my $i (0..$#tchars) {
 		my $fs = $cover_title_font_size;
-		my $fn = get_font($tchars[$i], \@fns);
+		my $fn = get_font($tchars[$i], \@tfns);
 		my ($fx, $fy) = ($fs, $canvas_height-$cover_title_y-$fs*$i*1.2);
 		$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tchars[$i], -color => $cover_font_color);
 	}
 	#打印封面作者文字
 	foreach my $i (0..$#achars) {
 		my $fs = $cover_author_font_size;
-		my $fn = get_font($achars[$i], \@fns);
+		my $fn = get_font($achars[$i], \@tfns);
 		my ($fx, $fy) = ($fs/2, $canvas_height-$cover_author_y-$fs*$i*1.2);
 		$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $achars[$i], -color => $cover_font_color);
 	}
@@ -354,7 +371,7 @@ foreach my $tid ($from..$to) {
 
 	foreach my $i (0..$#tpchars) {
 		my $fs = $title_font_size;
-		my $fn = get_font($tpchars[$i], \@fns);
+		my $fn = get_font($tpchars[$i], \@tfns);
 		my ($fx, $fy) = ($canvas_width/2-$fs/2, $title_y-$fs*$i*$title_ydis);
 		$fx=-$fs/2 if(defined $if_tpcenter and $if_tpcenter == 0); #标题不居中时位于左侧
 		$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color);
@@ -367,6 +384,7 @@ foreach my $tid ($from..$to) {
 			$pid++;
 			$pcnt = 0;
 
+			#版心页码
             my @pchars_zh = split //, $zhnums{$pid};
             foreach my $i (0..$#pchars_zh) {
             	my $ps = $pager_font_size;
@@ -382,7 +400,7 @@ foreach my $tid ($from..$to) {
 			$vpage->object($vpimg, 0, 0);
 			foreach my $i (0..$#tpchars) {
 				my $fs = $title_font_size;
-				my $fn = get_font($tpchars[$i], \@fns);
+				my $fn = get_font($tpchars[$i], \@tfns);
 				my ($fx, $fy) = ($canvas_width/2-$fs/2, $title_y-$fs*$i*$title_ydis);
 				$fx=-$fs/2 if(defined $if_tpcenter and $if_tpcenter == 0);
 				$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color);
@@ -427,12 +445,12 @@ foreach my $tid ($from..$to) {
 				}
 				my $fn = '';
 
-				$fn = get_font($rc, \@fns);
+				$fn = get_font($rc, \@cfns);
 				if($fn ne $fn1 and defined $try_st and $try_st == 1) {
 					my $try = try_st_trans($rc);
-					if($try) { $rc = $try; $fn = $fn1; }
+					if($try) { $rc = $try; $fn = $cfns[0]; }
 				}
-				if(not $fn) { $rc = '□'; $fn = get_font($rc, \@fns); }
+				if(not $fn) { $rc = '□'; $fn = get_font($rc, \@cfns); }
 
 				my ($fsize, $fcolor, $fdgrees) = ($fonts{$fn}->[1], $comment_font_color, $fonts{$fn}->[2]);
 				my ($fx, $fy);
@@ -459,7 +477,8 @@ foreach my $tid ($from..$to) {
 					}
 					$pcnt+=0.5; #批注占半个字符位
 				}
-				$fcolor = 'blue' if(defined $opts{'z'} and $fn ne $fn1);
+				$fcolor = $onlyperiod_color ? $onlyperiod_color : $fcolor if($if_onlyperiod == 1 and $rc eq '。');
+				$fcolor = 'blue' if(defined $opts{'z'} and $fn ne $cfns[0]);
 				$vpage->text()->textlabel($fx, $fy, $vfonts{$fn}, $fsize, $rc, -rotate => $fdgrees, -color => $fcolor);
 				if(defined $if_book_vline and $if_book_vline == 1) {
 					if($flag_rbook == 1) { #书名侧边线
@@ -522,12 +541,12 @@ foreach my $tid ($from..$to) {
 			if($pcnt <= $page_chars_num) {
 				my $fn = '';
 
-				$fn = get_font($char, \@fns);
+				$fn = get_font($char, \@tfns);
 				if($fn and $fn ne $fn1 and defined $try_st and $try_st == 1) {
 					my $try = try_st_trans($char);
-					if($try) { $char = $try; $fn = $fn1; }
+					if($try) { $char = $try; $fn = $tfns[0]; }
 				}
-				if(not $fn) { $char = '□'; $fn = get_font($char, \@fns); }
+				if(not $fn) { $char = '□'; $fn = get_font($char, \@tfns); }
 
 				my ($fsize, $fcolor, $fdgrees)  = ($fonts{$fn}->[0], $text_font_color, $fonts{$fn}->[2]);
 				my ($fx, $fy) = @{$pos_l[$pcnt]};
@@ -551,6 +570,7 @@ foreach my $tid ($from..$to) {
 					}
 					@last = @{$pos_l[$pcnt]};
 				}
+				$fcolor = $onlyperiod_color ? $onlyperiod_color : $text_font_color if($if_onlyperiod == 1 and $char eq '。');
 				$fcolor = 'blue' if(defined $opts{'z'} and $fn ne $fn1);
 				#print "$char -> $fn\n";
 				$vpage->text()->textlabel($fx, $fy, $vfonts{$fn}, $fsize, $char, -rotate => $fdgrees, -color => $fcolor);
