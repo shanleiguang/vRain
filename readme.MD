@@ -11,6 +11,12 @@
 - Scanned images of ancient books often suffer from issues such as scanning distortion, page defects, and large file sizes, making it difficult to read since the text cannot be selected for searching dictionary.
 - The goal of this project is to create ebook in text format that replicates the original appearance of the ancient books, supporting annotations and queries, making it convenient to store in ebook-readers for reading anytime. The elegant and immersive reading experience brought by the primitive form of ancient books may attract more readers to enjoy reading ancient literature.
 
+## 更新紀錄
+
+- 2025/8，更新至v1.4版本：1、可選字體從4個增加到5個，正文及批注文字可設置各自字體組；2、標點規一化句讀模式下，句號可設置顏色，如紅色；3、新增一個多欄分支版本[vRainMR（MultiRows）](https://github.com/shanleiguang/vRain/discussions/14)，適用簡單的族譜和古籍字典的分欄排版。
+- 2025/7，更新至v1.3版本，打包發布Intel Macos版本，版心頁碼改為居中，更新樣書，添加使用說明。
+- 2025/3，新增宣纸做旧风格背景图生成脚本；新增竹简风格背景图生成脚本；新增原始文本字符字体支持情况检测及替换脚本；新增批量插图脚本；新增用于整段缩进排版的文本预处理脚本；新增生成PDF压缩代码，压缩比约30倍。
+
 ## vRain is  
 
 - vRain是该復刻計劃的主要工具，此外還有古籍印章製作工具 [vYinn殷人](https://github.com/shanleiguang/vYinn) 、古棋譜製作工具 [vQi](https://github.com/shanleiguang/vQi) 、古籍掃描圖像變形糾正工具[vModou墨斗](https://github.com/shanleiguang/vModou)以及其他傳統文化文創工具，如天地人三才傳統曆法筆記本 [v3Cai](https://github.com/shanleiguang/v3CaiPreview)等。
@@ -43,9 +49,3 @@
 ## 赞助支持 Sponsorship
 如果您覺得本工具對您的工作或生活有些微幫助，請給予必要支持，謝謝！  
 ![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
-
-## 更新紀錄
-
-- 2025/8，更新至v1.4版本：1、可選字體從4個增加到5個，正文及批注文字可設置各自字體組；2、標點規一化句讀模式下，句號可設置顏色，如紅色。
-- 2025/7，更新至v1.3版本，打包發布Intel Macos版本，版心頁碼改為居中，更新樣書，添加使用說明。
-- 2025/3，新增宣纸做旧风格背景图生成脚本；新增竹简风格背景图生成脚本；新增原始文本字符字体支持情况检测及替换脚本；新增批量插图脚本；新增用于整段缩进排版的文本预处理脚本；新增生成PDF压缩代码，压缩比约30倍。
