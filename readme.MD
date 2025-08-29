@@ -1,7 +1,7 @@
 
 ![image](https://github.com/shanleiguang/vRain/blob/main/cover.png)
 
-[**運行環境**](https://github.com/shanleiguang/vRain/wiki/Runtime)  [**使用手冊**](https://github.com/shanleiguang/vRain/wiki)   [**更多樣例**](https://github.com/shanleiguang/vBooks)  [**更多開源項目**](https://github.com/shanleiguang/vRain/wiki/More)
+[**運行環境**](https://github.com/shanleiguang/vRain/wiki/Runtime)  [**使用手冊**](https://github.com/shanleiguang/vRain/wiki)   [**更多樣例**](https://github.com/shanleiguang/vBooks)  [**更多開源項目**](https://github.com/shanleiguang/vRain/wiki/More)  
 
 ## 中文古籍数字复刻计划 
 ## Digital Reproduction Project of Chinese Ancient Books
@@ -27,6 +27,11 @@
 - 百萬字書籍十幾分鐘生成。
 - 採用Perl語言開發，需安裝Image::Magick和PDF::Builder等模塊。
 - 作者小紅書主頁：兀雨書屋。
+
+## vRain的Python版本
+
+- 熟悉Python語言的朋友，這裡是[msyloveldx](https://github.com/msyloveldx)移植開發的含有GUI界面的[vRainPyhon版本](https://github.com/msyloveldx/vRain-Python)，感謝他的積極參與和貢獻，大家一起為中文古籍數字化成果惠及更多讀者而努力！
+- 非常高興看到vRain的成長，同時，我將繼續完善原始Perl版本的功能，仍有很多想法還有待實現。
 
 ## Example
 
