@@ -60,9 +60,11 @@ my ($olw, $olc) = ($canvas{'outline_width'}, $canvas{'outline_color'});
 my ($moh, $mov) = ($canvas{'outline_hmargin'}, $canvas{'outline_vmargin'});
 my ($lgi, $lgt, $lgy, $lgc) = ($canvas{'logo_image'}, $canvas{'logo_text'}, $canvas{'logo_y'}, $canvas{'logo_color'});
 my ($lgf, $lgs) = ($canvas{'logo_font'}, $canvas{'logo_font_size'});
+
 my $clw = ($cw-$ml-$mr-$lcw)/$cln; #计算列宽
 
 $cc = 'white' if(not $cc); #背景色未定义时采用白色
+
 print '-'x60, "\n";
 print "创建 '$cid' 背景图 ... \n";
 print '-'x60, "\n";
@@ -73,14 +75,15 @@ print "\t四边边距：上$mt 下$mb 左$ml 右$mr\n";
 print "\t外框线宽：$olw\t外框颜色：$olc\n";
 print "\t内框线宽：$ilw\t内框颜色：$ilc\n";
 print "\t内外框距：横$moh 纵$mov\n";
-print "\t多栏模式：", ($ifmr) ? $mrn.'栏' : '否', "\t分栏线宽：", ($mrlw) ? $mrlw : 0, "\t栏列线色：", ($mrcc) ? $mrcc : '', "\n";
-print "\t是否花尾：", ($iff) ? '是' : '否', "\t鱼尾装饰：", ($ffi) ? $ffi : '无', "\n";
+print "\t多栏模式：", ($ifmr) ? $mrn.'栏' : '否', "\t分栏线宽：", ($mrlw) ? $mrlw : '', "\t栏列线色：", ($mrcc) ? $mrcc : '', "\n";
+print "\t是否花尾：", ($iff) ? '是' : '否', "\t鱼尾装饰：", ($ffi) ? $ffi : '无', " *鱼尾装饰图应为正方形且内容居中\n";
 print "\t鱼尾对顺：", ($fbd == 0) ? '顺鱼尾' : '对鱼尾', "\n";
 print "\t鱼尾高度：上$fty 下$fby *以左上角为原点\n";
 print "\t上尾身长：$ftrh\t上尾尾长：$ftth\n";
 print "\t下尾身长：$fbrh\t下尾尾长：$fbth\n";
 print "\t个性印章：", ($lgi) ? $lgi : '无', "\t个性签名：", ($lgt) ? $lgt : '无', "\n";
 print '-'x60, "\n";
+
 my $cimg = Image::Magick->new(); #画布图层
 
 if(defined $bg and -f $bg) { #使用背景图
@@ -130,33 +133,40 @@ draw_fishtop($fty, $ftrh, $ftth);
 #下鱼尾
 if($fbd == 0) { draw_fishbtm_down($fby, $fbrh, $fbth); } #顺鱼尾
 if($fbd == 1) { draw_fishbtm_up($fby, $fbrh, $fbth); } #对鱼尾
-#鱼尾装饰图
+#鱼尾装饰图，要求：正方形，透明底色，主体图案为白色
 if($ffi and -f $ffi) {
 	#三叶草图层
+	#将装饰图缩小为鱼尾尾部高度的黄金分割比例尺寸，距版心左、右侧线距离为$delta并与鱼身高度对齐
 	my $fimg1 = Image::Magick->new(); #左上
-	my $fw = $ftrh*$gr;
+	my ($fw, $fh) = ($ftrh*$gr, $ftrh*$gr);
 	$fimg1->ReadImage($ffi);
-	$fimg1->AdaptiveResize(width => $fw, height => $fw, method => 'Lanczos'); #缩小
+	$fimg1->AdaptiveResize(width => $fw, height => $fh, method => 'Lanczos'); #缩小
 	my $fimg2 = $fimg1->Clone(); #右上
 	my $fimg3 = $fimg1->Clone(); #右下
 	my $fimg4 = $fimg1->Clone(); #左下
 	$fimg1->Rotate(degrees => -30, background => 'transparent'); #逆时针旋转30度
-	$limg->Composite(image => $fimg1, x => $cw/2-$clw/2-$fw/4, y => $fty+$fw/2, compose => 'Over');
+	($fw, $fh) = ($fimg1->Get('width'), $fimg1->Get('height')); #旋转后更新宽、高
+	$limg->Composite(image => $fimg1, x => $cw/2-$lcw/2+$delta, y => $fty+$ftrh-$fh, compose => 'Over');
 	$fimg2->Rotate(degrees => 30, background => 'transparent'); #顺时针旋转30度
-	$limg->Composite(image => $fimg2, x => $cw/2+$fw/2, y => $fty+$fw/2, compose => 'Over');
+	($fw, $fh) = ($fimg2->Get('width'), $fimg2->Get('height'));
+	$limg->Composite(image => $fimg2, x => $cw/2+$lcw/2-$fw-$delta, y => $fty+$ftrh-$fh, compose => 'Over');
 	$fimg3->Rotate(degrees => -150, background => 'transparent'); ##逆时针旋转150度
 	$fimg4->Rotate(degrees => 150, background => 'transparent'); #逆时针旋转150度
 	if($fbrh > 0 and $fbth > 0) {
-		if($fbd == 0) {
-			$limg->Composite(image => $fimg3, x => $cw/2-$clw/2-$fw/4, y => $fby+$fbrh-$ftth, compose => 'Over');
-			$limg->Composite(image => $fimg4, x => $cw/2+$fw/2, y => $fby+$fbrh-$ftth, compose => 'Over');
+		if($fbd == 0) { #顺鱼尾
+			($fw, $fh) = ($fimg3->Get('width'), $fimg3->Get('height'));
+			$limg->Composite(image => $fimg3, x => $cw/2-$lcw/2+$delta, y => $fby+$fbrh-$fh, compose => 'Over');
+			($fw, $fh) = ($fimg4->Get('width'), $fimg4->Get('height'));
+			$limg->Composite(image => $fimg4, x => $cw/2+$lcw/2-$fw-$delta, y => $fby+$fbrh-$fh, compose => 'Over');
 		}
-		if($fbd == 1) {
-			$limg->Composite(image => $fimg3, x => $cw/2-$clw/2-$fw/4, y => $fby-$fbrh, compose => 'Over');
-			$limg->Composite(image => $fimg4, x => $cw/2+$fw/2, y => $fby-$fbrh, compose => 'Over');
+		if($fbd == 1) { #对鱼尾
+			($fw, $fh) = ($fimg3->Get('width'), $fimg3->Get('height'));
+			$limg->Composite(image => $fimg3, x => $cw/2-$lcw/2+$delta, y => $fby-$fbrh, compose => 'Over');
+			($fw, $fh) = ($fimg4->Get('width'), $fimg4->Get('height'));
+			$limg->Composite(image => $fimg4, x => $cw/2+$lcw/2-$fw-$delta, y => $fby-$fbrh, compose => 'Over');
 		}
 	}
-	$limg->Opaque(color => 'white', fill => 'transparent'); #三叶草白色替换为透明
+	$limg->Opaque(color => 'white', fill => 'transparent'); #装饰图白色主体替换为透明
 }
 
 #花鱼尾，弧形花鱼尾
