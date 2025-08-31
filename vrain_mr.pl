@@ -178,14 +178,15 @@ my $cw = ($canvas_width - $margins_left - $margins_right - $lc_width)/$col_num;
 my $rh = ($canvas_height - $margins_top - $margins_bottom)/$row_num;
 #页面位置数组
 my (@pos, $pos_x, $pos_y); #单列
-my (@pos_r, @pos_l); #单列左右双排
+my @pos_r = ([0,0]); #单列左右双排
+my @pos_l = ([0,0]);
 #生成文字坐标，$pos_l、$pos_r用于夹批双排，$pos_l用于正文单排
-if($if_multirows and $multirows_num != 1) {
+if($if_multirows and $multirows_num != 1) { #相当于减小每列字数，拉长增加总列数
 	if($row_num % $multirows_num != 0) {
 		print "错误：多横栏模式下，每列字数应是栏数的倍数！\n" and exit;
 	}
 	my $rrow_num = $row_num/$multirows_num;
-	#横向整叶再换行
+	#横向整叶换行，族谱
 	if($multirows_hl == 1) {
 		foreach my $rid (1..$multirows_num) {
 			foreach my $i (1..$col_num) {
@@ -193,21 +194,44 @@ if($if_multirows and $multirows_num != 1) {
 					$pos_x = $canvas_width - $margins_right - $cw*$i if($i <= $col_num/2);
 					$pos_x = $canvas_width - $margins_right - $cw*$i - $lc_width if($i > $col_num/2);
 					$pos_y = $canvas_height - $margins_top - $rrow_num*($rid-1)*$rh - $rh*$j + $row_delta_y;
-					$pos_l[ $rrow_num*$col_num*($rid-1)+($i-1)*$rrow_num+$j ] = [$pos_x, $pos_y];
-					$pos_r[ $rrow_num*$col_num*($rid-1)+($i-1)*$rrow_num+$j ] = [$pos_x+$cw/2, $pos_y];
+					push @pos_l, [$pos_x, $pos_y];
+					push @pos_r, [$pos_x+$cw/2, $pos_y];
 				}
 			}
 		}
 	}
-	$row_num = $rrow_num;
+	#横向整页换行，字典
+	if($multirows_hl == 2) {
+		foreach my $rid (1..$multirows_num) {
+			foreach my $i (1..$col_num/2) {
+				foreach my $j (1..$rrow_num) {
+					$pos_x = $canvas_width - $margins_right - $cw*$i;
+					$pos_y = $canvas_height - $margins_top - $rrow_num*($rid-1)*$rh - $rh*$j + $row_delta_y;
+					push @pos_l, [$pos_x, $pos_y];
+					push @pos_r, [$pos_x+$cw/2, $pos_y];
+				}
+			}
+		}
+		foreach my $rid (1..$multirows_num) {
+			foreach my $i ($col_num/2+1..$col_num) {
+				foreach my $j (1..$rrow_num) {
+					$pos_x = $canvas_width - $margins_right - $cw*$i - $lc_width;
+					$pos_y = $canvas_height - $margins_top - $rrow_num*($rid-1)*$rh - $rh*$j + $row_delta_y;
+					push @pos_l, [$pos_x, $pos_y];
+					push @pos_r, [$pos_x+$cw/2, $pos_y];
+				}
+			}
+		}
+	}
+	$row_num = $rrow_num; #更新列字数
 } else {
 	foreach my $i (1..$col_num) {
 		foreach my $j (1..$row_num) {
 			$pos_x = $canvas_width - $margins_right - $cw*$i if($i <= $col_num/2);
 			$pos_x = $canvas_width - $margins_right - $cw*$i - $lc_width if($i > $col_num/2);
 			$pos_y = $canvas_height - $margins_top - $rh*$j + $row_delta_y;
-			$pos_l[ ($i-1)*$row_num+$j ] = [$pos_x, $pos_y];
-			$pos_r[ ($i-1)*$row_num+$j ] = [$pos_x+$cw/2, $pos_y];
+			push @pos_l, [$pos_x, $pos_y];
+			push @pos_r, [$pos_x+$cw/2, $pos_y];
 		}
 	}
 }
