@@ -39,6 +39,8 @@
 
 ![image](https://github.com/shanleiguang/vRain/blob/main/images/010.png)
 
+![image](https://github.com/shanleiguang/vRain/blob/main/images/014.png)
+
 ## 基本功能  
 
 - 書葉背景圖的書房名、尺寸、列數、框線粗細及顏色均可配置。支持單雙、順對、黑白魚尾。
