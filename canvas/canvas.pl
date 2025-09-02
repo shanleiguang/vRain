@@ -59,7 +59,7 @@ my ($ilw, $ilc) = ($canvas{'inline_width'}, $canvas{'inline_color'});
 my ($olw, $olc) = ($canvas{'outline_width'}, $canvas{'outline_color'});
 my ($moh, $mov) = ($canvas{'outline_hmargin'}, $canvas{'outline_vmargin'});
 my ($lgi, $lgt, $lgy, $lgc) = ($canvas{'logo_image'}, $canvas{'logo_text'}, $canvas{'logo_y'}, $canvas{'logo_color'});
-my ($lgf, $lgs) = ($canvas{'logo_font'}, $canvas{'logo_font_size'});
+my ($lgf, $lgs) = ('../fonts/'.$canvas{'logo_font'}, $canvas{'logo_font_size'});
 
 my $clw = ($cw-$ml-$mr-$lcw)/$cln; #计算列宽
 

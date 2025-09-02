@@ -181,11 +181,11 @@ my (@pos, $pos_x, $pos_y); #单列
 my @pos_r = ([0,0]); #单列左右双排
 my @pos_l = ([0,0]);
 #生成文字坐标，$pos_l、$pos_r用于夹批双排，$pos_l用于正文单排
-if($if_multirows and $multirows_num != 1) { #相当于减小每列字数，拉长增加总列数
+if($if_multirows and $multirows_num != 1) {
 	if($row_num % $multirows_num != 0) {
 		print "错误：多横栏模式下，每列字数应是栏数的倍数！\n" and exit;
 	}
-	my $rrow_num = $row_num/$multirows_num;
+	my $rrow_num = $row_num/$multirows_num; #相当于减小每列字数，拉长增加总列数
 	#横向整叶换行，族谱
 	if($multirows_hl == 1) {
 		foreach my $rid (1..$multirows_num) {
@@ -558,7 +558,7 @@ foreach my $tid ($from..$to) {
     			$pcnt = $page_chars_num; next;
     		}
     	}
-    	if($char eq '^') { #前进半页或整页
+    	if($char eq '^') { #多栏模式下跳转到下一栏
     		shift @chars for(1..$row_num-1); #跳过$后补齐列高的空格
     		next if($pcnt % ($page_chars_num/$multirows_num) == 0);
     		$pcnt = (int($pcnt/($page_chars_num/$multirows_num))+1)*($page_chars_num/$multirows_num);
@@ -568,13 +568,13 @@ foreach my $tid ($from..$to) {
 			shift @chars for (1..$row_num-1); #跳过%后补齐列高的空格
 			$pcnt = $page_chars_num; goto RCHARS;
 		}
-		if($char eq '&') { #跳至页最后一列
+		if($char eq '&') { #跳至本页最后一列
 			shift @chars for (1..$row_num-1); #跳过&后补齐列高的空格
 			if($pcnt <= $page_chars_num-$row_num+1) {
 				$pcnt = $page_chars_num-$row_num; goto RCHARS;
 			}
 		}
-		if($char eq '《') {
+		if($char eq '《') { #书名号
 			$flag_tbook = 1;
 			next if(defined $if_book_vline and $if_book_vline == 1);
 		}
