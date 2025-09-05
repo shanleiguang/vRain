@@ -19,7 +19,7 @@ binmode(STDOUT, ':encoding(utf8)');
 binmode(STDERR, ':encoding(utf8)');
 
 my $software = 'vRain';
-my $version = 'v1.4';
+my $version = 'v1.41';
 
 #程序输入参数设置
 my %opts;
@@ -118,7 +118,7 @@ my ($text_font_color, $comment_font_color) = ($book{'text_font_color'}, $book{'c
 my ($cover_title_font_size, $cover_title_y) = ($book{'cover_title_font_size'}, $book{'cover_title_y'});
 my ($cover_author_font_size, $cover_author_y) = ($book{'cover_author_font_size'}, $book{'cover_author_y'});
 my $cover_font_color = $book{'cover_font_color'};
-#叶心标题、页码字体
+#版心标题、页码字体
 my ($if_tpcenter, $title_postfix, $title_directory) = ($book{'if_tpcenter'}, $book{'title_postfix'}, $book{'title_directory'});
 my ($title_font_size, $title_font_color, $title_y, $title_ydis) = ($book{'title_font_size'}, $book{'title_font_color'}, $book{'title_y'}, $book{'title_ydis'});
 my ($pager_font_size, $pager_font_color, $pager_y) = ($book{'pager_font_size'}, $book{'pager_font_color'}, $book{'pager_y'});
@@ -173,17 +173,20 @@ my $logo_text = $canvas{'logo_text'};
 #计算列宽、行高
 my $cw = ($canvas_width - $margins_left - $margins_right - $lc_width)/$col_num;
 my $rh = ($canvas_height - $margins_top - $margins_bottom)/$row_num;
-#页面位置数组
+#叶面位置数组
 my (@pos, $pos_x, $pos_y); #单列
-my (@pos_r, @pos_l); #单列左右双排
-#生成文字坐标，$pos_l、$pos_r用于夹批双排，$pos_l用于正文单排
+my @pos_l = ([]); #单列左右双排左列位置数组
+my @pos_r = ([]); #单列左右双排右列位置数据
+#生成文字坐标，$pos_l、$pos_r用于批注双排，$pos_l用于正文单排
 foreach my $i (1..$col_num) {
 	foreach my $j (1..$row_num) {
 		$pos_x = $canvas_width - $margins_right - $cw*$i if($i <= $col_num/2);
 		$pos_x = $canvas_width - $margins_right - $cw*$i - $lc_width if($i > $col_num/2);
 		$pos_y = $canvas_height - $margins_top - $rh*$j + $row_delta_y;
-		$pos_l[ ($i-1)*$row_num+$j ] = [$pos_x, $pos_y];
-		$pos_r[ ($i-1)*$row_num+$j ] = [$pos_x+$cw/2, $pos_y];
+		#$pos_l[ ($i-1)*$row_num+$j ] = [$pos_x, $pos_y];
+		#$pos_r[ ($i-1)*$row_num+$j ] = [$pos_x+$cw/2, $pos_y];
+		push @pos_l, [$pos_x, $pos_y]; #由计算元素序号改为push到数据
+		push @pos_r, [$pos_x+$cw/2, $pos_y];
 	}
 }
 
@@ -342,23 +345,23 @@ if(-f "books/$book_id/cover.jpg") {
 
 #依次处理每个文本，逐字打印到PDF页面
 my %outlines;
-my ($pid, $pcnt) = (0, 0); #非常重要：$pcnt，每页写入文字的当前标准字位指针
-my ($flag_tbook, $flag_rbook) = (0, 0); #正文、批注中书名号标记
+my ($pid, $pcnt) = (0, 0); #非常重要：$pcnt每叶写入字符的当前标准字位指针
+my ($flag_tbook, $flag_rbook) = (0, 0); #正文、批注中书名号标识
 foreach my $tid ($from..$to) {
 	last if(defined $opts{'z'} and $pid == $opts{'z'});
 	print "读取'books/$book_id/text/'目录下第 $tid "."个文本文件...\n";
 	my $dat = $dats[$tid];
 	my @chars = split //, $dat;
 	my $chars_num = $#chars+1; #需要处理的总字符数
-	my @rchars = (); #保存标注文本字符；因标注文本可能跨页，故设置为全局变量，创建新页后优先处理上页遗留的标注文字
-	my (@tpchars, @last, $tptitle);
+	my @rchars = (); #保存标注文本字符。因标注文本可能跨页，创建新页后优先处理上叶遗留的标注文字
+	my (@tpchars, @last, $tptitle); #标题字符数组，正文上个字符位置，标题
 
 	if(defined $title_postfix) {
-		my $cid = ($if_text000 == 1) ? $tid-1 : $tid;
+		my $cid = ($if_text000 == 1) ? $tid-1 : $tid; #如果存在000.txt文件，文件排序序号-1后计算卷号
 		my $tpost = $title_postfix;
 		$tpost =~ s/X/$zhnums{$cid}/;
-		$tpost = '序' if($cid == 0);	
-		$tpost = '附' if($if_text999 == 1 and $tid == $#dats);		
+		$tpost = '序' if($cid == 0);	 #序及前言
+		$tpost = '附' if($if_text999 == 1 and $tid == $#dats); #附录
 		@tpchars = split //, $title.$tpost;
 	} else {
 		@tpchars = split //, $title;
@@ -368,22 +371,21 @@ foreach my $tid ($from..$to) {
 	print "创建新PDF页[$pid]...\n";
 	$vpage = $vpdf->page();
 	$vpage->object($vpimg, 0, 0); #添加背景图
-
+	#打印版心标题文字
 	foreach my $i (0..$#tpchars) {
 		my $fs = $title_font_size;
 		my $fn = get_font($tpchars[$i], \@tfns);
 		my ($fx, $fy) = ($canvas_width/2-$fs/2, $title_y-$fs*$i*$title_ydis);
-		$fx=-$fs/2 if(defined $if_tpcenter and $if_tpcenter == 0); #标题不居中时位于左侧
+		$fx=-$fs/2 if(defined $if_tpcenter and $if_tpcenter == 0); #标题不居中时位于最左侧，适用现代极简、竹简等无版心背景
 		$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color);
 	}
-	#标注文本采用双排后，每页、每列文字数是变化的，页数、列数不能提前确定，需逐个字符处理，直至全部字符处理完，期间指针到达整页时创新新页
+	#批注文本采用双排，则实际每叶、每列文字数是不固定的，因此每个字符的页数、列数、行数无法提前计算，需逐个字符处理，直至全部字符处理完，期间指针到达整叶时创新新叶
 	while(1) {
-		#非常重要：核心跳转机制
+		#非常重要：核心跳转机制，处理需要创建新叶的情况
 		RCHARS:
-		if($pcnt == $page_chars_num or not scalar @chars) { #满整页或字符处理完时，打印当前页，创建新页，初始化相关全局变量
+		if($pcnt == $page_chars_num or (not scalar @chars and not scalar @rchars)) { #打满整叶或当前文本字符全部处理完时，打印页码，创建新叶，初始化相关全局变量
 			$pid++;
 			$pcnt = 0;
-
 			#版心页码
             my @pchars_zh = split //, $zhnums{$pid};
             foreach my $i (0..$#pchars_zh) {
@@ -391,10 +393,10 @@ foreach my $tid ($from..$to) {
             	my $pc = $pchars_zh[$i];
             	my $px = $canvas_width/2-$pager_font_size/2;
             	my $py = $pager_y - $pager_font_size*$i*$title_ydis;
-            	$px=-$ps/2 if(defined $if_tpcenter and $if_tpcenter == 0); #标题不居中时位于左侧
+            	$px=-$ps/2 if(defined $if_tpcenter and $if_tpcenter == 0); #标题不居中时页码位于最左侧，适用现代极简、竹简等无版心背景
             	$vpage->text->textlabel($px, $py, $vfonts{$fn1}, $ps, $pc, -color => $pager_font_color);
             }
-            last if(not scalar @chars); #所有字符处理完时退出While循环
+            last if(not scalar @chars and not scalar @rchars); #所有字符（包括批注字符数组）处理完时，退出While循环，处理下一文本
 			print "创建新PDF页[$pid]...\n";
 			$vpage = $vpdf->page(); #新页
 			$vpage->object($vpimg, 0, 0);
@@ -406,11 +408,10 @@ foreach my $tid ($from..$to) {
 				$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color);
 			}
 		}
-		#优先处理标注文本页内跨列、跨页的情况
+		#批注文字采用逐列打印机制
 		if(scalar @rchars) { #BUG记录：标注文本最后一个字符未处理
-			my $cnt;
-			my @r_pos; #存储标注双排打印对应的坐标
-			#每次跳转重新计算标注文字双排占用的标准字位长度，向上取整
+			my $cnt; #批注字符计数器
+			my @r_pos; #存储当前列剩余位置可用于打印标注双排字符的位置数组，每次跳转新列后重新计算新列批注双排文字的位置数组，与468行跳转机制对应
 			my $rctmp = join '', @rchars;
 			$rctmp =~ s/$comment_comma_nop_tmp//g if($comment_comma_nop_tmp); #去除批注中不占字符位置的标点
 			$rctmp =~ s/《|》//g if(defined $if_book_vline and $if_book_vline == 1); #去除书名号
@@ -426,15 +427,14 @@ foreach my $tid ($from..$to) {
 			} else {
 				$pcol = int($pcnt/$row_num)+1;
 			}
-			#是否跨列
-			if($pcnt+$cnt <= $pcol*$row_num) {
+			if($pcnt+$cnt <= $pcol*$row_num) { #非整列
 				@r_pos = (@pos_r[$pcnt+1..$pcnt+$cnt], @pos_l[$pcnt+1..$pcnt+$cnt]);
-			} else {
+			} else { #整列
 				@r_pos = (@pos_r[$pcnt+1..$pcol*$row_num], @pos_l[$pcnt+1..$pcol*$row_num]);
 			}
-			#在对应位置打印标注文本字符
-			my @rlast; #上一字符位置
-			while(my $rc = shift @rchars) {
+			#打印批注文本字符
+			my @rlast; #上一字符位置数组，用于计算不占字符位标点位置坐标
+			while(my $rc = shift @rchars) { #处理批注字符数组剩余元素
 				if($rc eq '《') {
 					$flag_rbook = 1;
 					next if(defined $if_book_vline and $if_book_vline == 1);
@@ -443,8 +443,9 @@ foreach my $tid ($from..$to) {
 					$flag_rbook = 0;
 					next if(defined $if_book_vline and $if_book_vline == 1);
 				}
-				my $fn = '';
 
+				my $fn = '';
+				
 				$fn = get_font($rc, \@cfns);
 				if($fn ne $fn1 and defined $try_st and $try_st == 1) {
 					my $try = try_st_trans($rc);
@@ -456,15 +457,15 @@ foreach my $tid ($from..$to) {
 				my ($fx, $fy);
 
 				print "\t[$pid/$pcnt] $rc -> $fn\n" if(defined $opts{'v'});
-				if($comment_comma_nop =~ m/$rc/) {
-					($fx, $fy) = @rlast;
+				if($comment_comma_nop =~ m/$rc/) { #先看该字符是否为不占字符位置标点
+					($fx, $fy) = @rlast; #不占字符位置标点以上个字符位置为参照取相对位置
 					$fsize = $fsize*$comment_comma_nop_size;
 					$fx+= $cw/2*$comment_comma_nop_x;
 					$fy-= $rh*$comment_comma_nop_y;
-					if($fy-$margins_bottom < 10) { $fy = $margins_bottom+10; }
+					if($fy-$margins_bottom < 10) { $fy = $margins_bottom+10; } #列尾纵坐标微调不压线
 				} else {
-					my $rpref = shift @r_pos;
-					if(not $rpref) { unshift @rchars, $rc;  goto RCHARS; } #如果位置数组为空，将提取的字符重新
+					my $rpref = shift @r_pos; #提取批注字符当前可用位置
+					if(not $rpref) { unshift @rchars, $rc;  goto RCHARS; } #无可用位置时，说明需要跳转新列，并将字符重新放回批注字符数组
 					($fx, $fy) = @$rpref;
 					@rlast = @$rpref;
 					$fx+= ($cw-$fsize*2)/4;
@@ -494,11 +495,12 @@ foreach my $tid ($from..$to) {
 				}
 			}
 			#print $pcnt, "\n"; #有效断点
-			if($#rchars > 0) { goto RCHARS; } #若标注文本有遗留，说明发生跨页或页内跨列，跳转直至本次标注文本处理完
+			if(scalar @rchars) { goto RCHARS; } #若标注文本有遗留，说明批注文字将跨叶，跳转创建新叶继续处理标注文字字符数组
 			$pcnt = int($pcnt+0.5); #指针前进数
-			if($pcnt == $page_chars_num) { goto RCHARS; } #如果此时到达页尾跳转写入图片并新建
+			if($pcnt == $page_chars_num) { goto RCHARS; } #如果到达页尾，跳转创建新叶
 		}
 		#正文文字打印
+		if(not scalar @chars) { goto RCHARS; } #文本所有字符已处理完，跳转判断批注字符数组是否还未处理完
 		my $char = shift @chars;
     	if($char eq '$') { #前进半页或整页
     		shift @chars for(1..$row_num-1); #跳过$后补齐列高的空格
@@ -527,7 +529,7 @@ foreach my $tid ($from..$to) {
 			$flag_tbook = 0;
 			next if(defined $if_book_vline and $if_book_vline == 1);
 		}
-		#注意：原始文本中的标注文本需严格使用【】区别
+		#注意：原始文本中的批注文本需严格使用【】区别
 		if($char eq '【') {
 			my $rdat;
 			while(my $rchar = shift @chars) {
@@ -537,7 +539,7 @@ foreach my $tid ($from..$to) {
 			@rchars = split //, $rdat; #更新全局标注文本变量
 			goto RCHARS; #处理标注文字
 		} else { #正文文字处理
-			$pcnt++ if($pcnt < $page_chars_num); #如果未达到页尾，指针前进，到达即停止
+			$pcnt++ if($pcnt < $page_chars_num); #如果未达到叶尾，指针前进，到达即停止
 			if($pcnt <= $page_chars_num) {
 				my $fn = '';
 
@@ -588,7 +590,7 @@ foreach my $tid ($from..$to) {
 				}
 				if($pcnt == $page_chars_num) {
 					if(scalar @chars) {
-						my $char = shift @chars; #达到页尾后，提前获取下一个字符，看是否是非占位标点，若是则先打印再跳转建新页
+						my $char = shift @chars; #达到叶尾后，提前获取下一个字符，看是否不占位标点，若是则先打印再跳转建新叶
 						if($text_comma_nop =~ m/$char/) {
 							($fx, $fy) = @{$pos_l[$pcnt]};
 							$fsize = $fsize*$text_comma_nop_size;
@@ -597,7 +599,7 @@ foreach my $tid ($from..$to) {
 							if($fy-$margins_bottom < 10) { $fy = $margins_bottom+10; }
 							$vpage->text->textlabel($fx, $fy, $vfonts{$fn1}, $fsize, $char, -rotate => $fdgrees, -color => $fcolor);
 						} else {
-							unshift @chars, $char; #占位字符放回字符串数组头部，放到新页
+							unshift @chars, $char; #占位字符重新放回字符数组头部，放到新叶处理
 						}
 					}
 				}
