@@ -6,6 +6,7 @@ use warnings;
 
 use PDF::Builder;
 use Font::FreeType;
+use Math::Trig qw(pi);
 use Encode::HanConvert;
 use Getopt::Std;
 use POSIX qw(strftime);
@@ -19,7 +20,7 @@ binmode(STDOUT, ':encoding(utf8)');
 binmode(STDERR, ':encoding(utf8)');
 
 my $software = 'vRain';
-my $version = 'v1.41';
+my $version = 'v1.42';
 
 #程序输入参数设置
 my %opts;
@@ -380,6 +381,7 @@ foreach my $tid ($from..$to) {
 		$vpage->text->textlabel($fx, $fy, $vfonts{$fn}, $fs, $tpchars[$i], -color => $title_font_color);
 	}
 	#批注文本采用双排，则实际每叶、每列文字数是不固定的，因此每个字符的页数、列数、行数无法提前计算，需逐个字符处理，直至全部字符处理完，期间指针到达整叶时创新新叶
+	my $last_char;  #上一个字符，减小书名号第一个字符纵坐标
 	while(1) {
 		#非常重要：核心跳转机制，处理需要创建新叶的情况
 		RCHARS:
@@ -437,10 +439,12 @@ foreach my $tid ($from..$to) {
 			while(my $rc = shift @rchars) { #处理批注字符数组剩余元素
 				if($rc eq '《') {
 					$flag_rbook = 1;
+					$last_char = $rc;
 					next if(defined $if_book_vline and $if_book_vline == 1);
 				}
 				if($rc eq '》') {
 					$flag_rbook = 0;
+					$last_char = $rc;
 					next if(defined $if_book_vline and $if_book_vline == 1);
 				}
 
@@ -481,19 +485,16 @@ foreach my $tid ($from..$to) {
 				$fcolor = $onlyperiod_color ? $onlyperiod_color : $fcolor if($if_onlyperiod == 1 and $rc eq '。');
 				$fcolor = 'blue' if(defined $opts{'z'} and $fn ne $cfns[0]);
 				$vpage->text()->textlabel($fx, $fy, $vfonts{$fn}, $fsize, $rc, -rotate => $fdgrees, -color => $fcolor);
-				if(defined $if_book_vline and $if_book_vline == 1) {
+				if(defined $if_book_vline and $if_book_vline == 1 and $rc ne ' ') {
 					if($flag_rbook == 1) { #书名侧边线
-						my $pline = $vpage->gfx();
-						my $ply = $fy+$rh*0.7;
-						$ply = $canvas_height-$margins_top-5 if($ply >= $canvas_height-$margins_top);
-						$pline->linewidth($bline_w);
-						$pline->strokecolor($bline_c);
-						$pline->move($fx-1, $fy-$rh*0.3);
-						$pline->line($fx-1, $fy-$rh*0.3, $fx-1, $ply);
-						$pline->stroke();
+						my $ply1 = $fy-$rh*0.3;
+						my $ply2 = ($last_char eq '《') ? $fy+$rh*0.65 : $fy+$rh*0.7;; #书名第一个字符y坐标微调，避免书名号连续
+						$ply2 = $canvas_height-$margins_top-5 if($ply2 >= $canvas_height-$margins_top);
+						draw_wavy_line($fx, $ply1, $fx, $ply2, $bline_w, $bline_c);
 					}
 				}
-			}
+				$last_char = $rc; #更新批注最近处理的字符
+			} #while
 			#print $pcnt, "\n"; #有效断点
 			if(scalar @rchars) { goto RCHARS; } #若标注文本有遗留，说明批注文字将跨叶，跳转创建新叶继续处理标注文字字符数组
 			$pcnt = int($pcnt+0.5); #指针前进数
@@ -523,10 +524,12 @@ foreach my $tid ($from..$to) {
 		}
 		if($char eq '《') {
 			$flag_tbook = 1;
+			$last_char = $char;
 			next if(defined $if_book_vline and $if_book_vline == 1);
 		}
 		if($char eq '》') {
 			$flag_tbook = 0;
+			$last_char = $char;
 			next if(defined $if_book_vline and $if_book_vline == 1);
 		}
 		#注意：原始文本中的批注文本需严格使用【】区别
@@ -576,16 +579,12 @@ foreach my $tid ($from..$to) {
 				$fcolor = 'blue' if(defined $opts{'z'} and $fn ne $fn1);
 				#print "$char -> $fn\n";
 				$vpage->text()->textlabel($fx, $fy, $vfonts{$fn}, $fsize, $char, -rotate => $fdgrees, -color => $fcolor);
-				if(defined $if_book_vline and $if_book_vline == 1) {
+				if(defined $if_book_vline and $if_book_vline == 1 and $char ne ' ') {
 					if($flag_tbook == 1) { #书名侧边线
-						my $pline = $vpage->gfx();
-						my $ply = $fy+$rh*0.7;
-						$ply = $canvas_height-$margins_top-5 if($ply >= $canvas_height-$margins_top);
-						$pline->linewidth($bline_w);
-						$pline->strokecolor($bline_c);
-						$pline->move($fx, $fy-$rh*0.3);
-						$pline->line($fx-2, $fy-$rh*0.3, $fx-2, $ply);
-						$pline->stroke();
+						my $ply1 = $fy-$rh*0.3;
+						my $ply2 = ($last_char eq '《') ? $fy+$rh*0.6 : $fy+$rh*0.7; #书名第一个字符y坐标微调，避免书名号连续
+						$ply2 = $canvas_height-$margins_top-5 if($ply2 >= $canvas_height-$margins_top);
+						draw_wavy_line($fx-2, $ply1, $fx-2, $ply2, $bline_w, $bline_c);
 					}
 				}
 				if($pcnt == $page_chars_num) {
@@ -605,6 +604,7 @@ foreach my $tid ($from..$to) {
 				}
 			}
 		}
+		$last_char = $char; #更新正文最近处理的字符
 		last if(defined $opts{'z'} and $pid == $opts{'z'});
 	}#while
 }
@@ -688,6 +688,51 @@ sub try_st_trans {
 	return $char_s2t if($fn_s2t eq $fn1);
 	return $char_t2s if($fn_t2s eq $fn1);
 	return '';
+}
+
+sub draw_wavy_line { #书名号波浪线
+    my ($x1, $y1, $x2, $y2, $w, $c) = @_;
+    my $gfx = $vpage->gfx();
+
+    # 默认参数
+    my $amplitude = 1.25;
+    my $wavelength = 10;
+    my $color = $c || 'black';
+    my $width = $w || 1;
+    
+    # 计算线的长度和角度
+    my $dx = $x2 - $x1;
+    my $dy = $y2 - $y1;
+    my $length = sqrt($dx**2 + $dy**2);
+    my $angle = atan2($dy, $dx);
+    
+    # 计算波浪线的点
+    my $segments = int($length / ($wavelength / 5));
+    my @points;
+    
+    for my $i (0..$segments) {
+        my $t = $i / $segments;
+        my $distance = $t * $length;
+        my $wave_offset = $amplitude * sin(2 * pi * $distance / $wavelength);
+        
+        # 计算垂直方向的偏移
+        my $perp_x = -sin($angle) * $wave_offset;
+        my $perp_y = cos($angle) * $wave_offset;
+        
+        my $x = $x1 + cos($angle) * $distance + $perp_x;
+        my $y = $y1 + sin($angle) * $distance + $perp_y;
+        
+        push @points, [$x, $y];
+    }
+    
+    # 绘制波浪线
+    $gfx->move($points[0][0], $points[0][1]);
+    for my $i (1..$#points) {
+        $gfx->line($points[$i][0], $points[$i][1]);
+    }
+    $gfx->strokecolor($color);
+    $gfx->linewidth($width);
+    $gfx->stroke();
 }
 
 sub get_cid_zh {
