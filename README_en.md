@@ -33,40 +33,40 @@ The tool generates book page backgrounds, calculates character positions (right-
 
 ```bash
 # Install Perl modules
-cpan Image::Magick PDF::Builder
+CPAN - Image::Magick, PDF::Builder, etc
 ```
 
 ### Usage
 
 ```bash
 # Generate a book (specify book ID from books/ directory)
-perl vRain.pl -b 01
+perl vRain.pl -b 01 -f 1 -t 10 -c
 
 # Test mode - generate first 10 pages only
-perl vRain.pl -b 01 -f 1 -t 10 -z
+perl vRain.pl -b 01 -f 1 -t 10 -z 10 -c
 
-# Compress PDF (macOS)
-perl vRain.pl -b 01 -c
 ```
 
 ### Options
 
-| Option | Description |
-|--------|-------------|
-| `-h` | Show help |
-| `-v` | Verbose output |
-| `-b` | Book ID (required) |
-| `-f` | Start text index |
-| `-t` | End text index |
-| `-z` | Test mode (limited pages) |
-| `-c` | Compress PDF |
+| Option | Description               |
+|--------|---------------------------|
+| `-h`   | Show help                 |
+| `-v`   | Verbose output            |
+| `-b`   | Book ID (required)        |
+| `-f`   | Start text index          |
+| `-t`   | End text index            |
+| `-z`   | Test mode (limited pages) |
+| `-c`   | Compress PDF              |
 
 ## Example Output
 
-| | | |
-|---|---|---|
-| ![001](https://github.com/shanleiguang/vRain/blob/main/images/001.png?raw=true) | ![002](https://github.com/shanleiguang/vRain/blob/main/images/002.png?raw=true) | ![003](https://github.com/shanleiguang/vRain/blob/main/images/003.png?raw=true) |
-| ![004](https://github.com/shanleiguang/vRain/blob/main/images/004.png?raw=true) | ![010](https://github.com/shanleiguang/vRain/blob/main/images/010.png?raw=true) | ![014](https://github.com/shanleiguang/vRain/blob/main/images/014.png?raw=true) |
+![001](https://github.com/shanleiguang/vRain/blob/main/images/001.png?raw=true) 
+![002](https://github.com/shanleiguang/vRain/blob/main/images/002.png?raw=true) 
+![003](https://github.com/shanleiguang/vRain/blob/main/images/003.png?raw=true)
+![004](https://github.com/shanleiguang/vRain/blob/main/images/004.png?raw=true)
+![010](https://github.com/shanleiguang/vRain/blob/main/images/010.png?raw=true)
+![014](https://github.com/shanleiguang/vRain/blob/main/images/014.png?raw=true)
 
 More examples: [vBooks Gallery](https://github.com/shanleiguang/vBooks)
 
