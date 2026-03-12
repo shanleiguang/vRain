@@ -5,7 +5,7 @@
 
 **Create vertical-layout eBooks in traditional Chinese woodblock print style**
 
-[中文](README_CN.md) | [English](README.md)
+[中文](README_CN.MD) | [English](readme.MD)
 
 ---
 
@@ -90,3 +90,8 @@ MIT License
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=shanleiguang/vRain)](https://star-history.com/#shanleiguang/vRain)
+
+## Sponsorship
+
+![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
+
