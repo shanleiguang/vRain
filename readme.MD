@@ -61,12 +61,10 @@ perl vRain.pl -b 01 -f 1 -t 10 -z 10 -c
 
 ## Example Output
 
-![001](https://github.com/shanleiguang/vRain/blob/main/images/001.png?raw=true) 
-![002](https://github.com/shanleiguang/vRain/blob/main/images/002.png?raw=true) 
-![003](https://github.com/shanleiguang/vRain/blob/main/images/003.png?raw=true)
-![004](https://github.com/shanleiguang/vRain/blob/main/images/004.png?raw=true)
-![010](https://github.com/shanleiguang/vRain/blob/main/images/010.png?raw=true)
-![014](https://github.com/shanleiguang/vRain/blob/main/images/014.png?raw=true)
+![001](https://github.com/shanleiguang/vRain/blob/main/images/000.png?raw=true) 
+![002](https://github.com/shanleiguang/vRain/blob/main/images/010.png?raw=true) 
+![003](https://github.com/shanleiguang/vRain/blob/main/images/008.png?raw=true)
+![004](https://github.com/shanleiguang/vRain/blob/main/images/014.png?raw=true)
 
 More examples: [vBooks Gallery](https://github.com/shanleiguang/vBooks)
 
