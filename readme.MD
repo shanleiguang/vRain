@@ -5,7 +5,7 @@
 
 **Create vertical-layout eBooks in traditional Chinese woodblock print style**
 
-[中文](README.md) | [English](README_en.md)
+[中文](README_CN.md) | [English](README.md)
 
 ---
 
