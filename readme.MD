@@ -266,8 +266,11 @@ vRain/
 - **郵箱**：shanleiguang@gmail.com
 
 ## 赞助支持 Sponsorship
-如果您覺得本工具對您的工作或生活有些微幫助，可給予必要支持。  
+
+- 如果覺得本工具對您的工作或生活有些微幫助，可給予必要支持。  
+
 ![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
+
 ---
 
 *兀雨——為中文古籍數位化提供專業的刻本風格排版工具。*
