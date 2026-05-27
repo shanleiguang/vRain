@@ -59,7 +59,7 @@ my ($ilw, $ilc) = ($canvas{'inline_width'}, $canvas{'inline_color'});
 my ($olw, $olc) = ($canvas{'outline_width'}, $canvas{'outline_color'});
 my ($moh, $mov) = ($canvas{'outline_hmargin'}, $canvas{'outline_vmargin'});
 my ($lgi, $lgt, $lgy, $lgc) = ($canvas{'logo_image'}, $canvas{'logo_text'}, $canvas{'logo_y'}, $canvas{'logo_color'});
-my ($lgf, $lgs) = ('../fonts/'.$canvas{'logo_font'}, $canvas{'logo_font_size'});
+my ($lgf, $lgs) = ($canvas{'logo_font'}, $canvas{'logo_font_size'});
 
 my $clw = ($cw-$ml-$mr-$lcw)/$cln; #计算列宽
 
@@ -103,12 +103,12 @@ $limg->ReadImage("canvas:transparent");
 
 my $delta = 5; #标准间距
 my $gr = 0.618; #黄金分割率
-#粗外框
-$limg->Draw(primitive => 'rectangle', points => get_points($ml-$olw/2-$moh-$delta, $mt-$olw/2-$mov-$delta, $cw-$mr+$olw/2+$moh+$delta, $ch-$mb+$olw/2+$mov+$delta),
-	fill => 'transparent', stroke => $olc, strokewidth => $olw);
 #细内框
-$limg->Draw(primitive => 'rectangle', points => get_points($ml-$delta, $mt-$delta, $cw-$mr+$delta, $ch-$mb+$delta),
+$limg->Draw(primitive => 'rectangle', points => get_points($ml, $mt-$delta, $cw-$mr, $ch-$mb+$delta),
 	fill => 'transparent', stroke => $ilc, strokewidth => $ilw);
+#粗外框
+$limg->Draw(primitive => 'rectangle', points => get_points($ml-$olw/2-$moh, $mt-$olw/2-$mov-$delta, $cw-$mr+$olw/2+$moh, $ch-$mb+$olw/2+$mov+$delta),
+	fill => 'transparent', stroke => $olc, strokewidth => $olw);
 #列细线
 foreach my $cid (1..$cln) {
 	#next if($cid == 18 or $cid == 19);
