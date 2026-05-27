@@ -56,10 +56,6 @@ vRain（兀雨）是一個 Perl 工具鏈，可將中文文本生成為古籍刻
 - **PDF 壓縮**：可選用 Ghostscript 對輸出 PDF 進行壓縮
 - 保留字符：'@'代表空格，'【】'內代表雙排批注文字，'%'代表換葉符，'$'代表換頁符（半葉），'&'代表下行文字居葉末，文本行首'S+數字'代表整段縮幾個字符（需indentxt腳本做預處理）。
 
-## 赞助支持 Sponsorship
-如果您覺得本工具對您的工作或生活有些微幫助，請給予必要支持，謝謝！  
-![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
-
 ## 系統需求
 
 - **Perl 5**（含核心模組）
@@ -267,6 +263,9 @@ vRain/
 - **小紅書**：@兀雨書屋
 - **郵箱**：shanleiguang@gmail.com
 
+## 赞助支持 Sponsorship
+如果您覺得本工具對您的工作或生活有些微幫助，可給予必要支持。  
+![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
 ---
 
 *兀雨——為中文古籍數位化提供專業的刻本風格排版工具。*
