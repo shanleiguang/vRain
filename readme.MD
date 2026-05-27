@@ -39,6 +39,8 @@ vRain（兀雨）是一個 Perl 工具鏈，可將中文文本生成為古籍刻
 
 ![image](https://github.com/shanleiguang/vRain/blob/main/images/014.png)
 
+![image](https://github.com/shanleiguang/vRain/blob/main/images/016.png)
+
 ## 基本功能  
 
 - 書葉背景圖的書房名、尺寸、列數、框線粗細及顏色均可配置。支持單雙、順對、黑白魚尾。
