@@ -760,7 +760,7 @@ foreach my $tid ($from..$to) {
                 my ($fx, $fy) = @{$pos_l[$pcnt]};
 
                 print "[$pid/$pcnt] $char -> $fn\n" if(defined $opts{'v'});
-                if($char eq 'TNO') {
+                if($char eq 'T') {
                     my $grect = $vpage->gfx();
                     #canvas绘制背景图时，边距、线宽参数通常为整数，但计算列宽后可能为小数，为确保首尾两列进一字时绘制边框对齐，需对坐标进行取整微调，但背景图配置文件变化时可能需要更新
                     #采用填充覆盖法绘制边框更易实现对齐
