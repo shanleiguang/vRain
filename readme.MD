@@ -8,18 +8,57 @@
 vRain（兀雨）是一個 Perl 工具鏈，可將中文文本生成為古籍刻本風格的直排（豎排）PDF 電子書。支援木活字、竹簡、棋譜等多種刻本風格，內建多字體補全策略確保生僻字正常顯示，並支援字體度量微調保持版面視覺一致性。
 
 [English Documentation](README_EN.md)
+![image](https://github.com/shanleiguang/vRain/blob/main/cover.png)
 
-## 功能特性
+[**運行環境**](https://github.com/shanleiguang/vRain/wiki/Runtime)  [**使用手冊**](https://github.com/shanleiguang/vRain/wiki)   [**更多樣例**](https://github.com/shanleiguang/vBooks)  [**更多開源項目**](https://github.com/shanleiguang/vRain/wiki/More)  
 
-- **直排（豎排）排版**：傳統中文自上而下、從右至左的閱讀方式
-- **多種刻本風格**：木活字、竹簡、棋譜等古籍背景圖
+## 中文古籍数字复刻计划 
+## Digital Reproduction Project of Chinese Ancient Books
+
+- 古籍刻本掃描影像通常存在掃描變形、頁面瑕疵、文件巨大等問題，且圖像無法選中其文字從而不能查詢生字生詞，因而不便閱讀。
+- 該計劃目的是參照古籍刻本之原貌，復刻出文字版的電子書，支持圈註、查閱，方便存入電子閱讀器隨時閱讀。通過古籍刻本古樸形式所帶來的沉浸優雅之閱讀體驗，也許將吸引更多讀者愛上古籍閱讀。
+- Scanned images of ancient books often suffer from issues such as scanning distortion, page defects, and large file sizes, making it difficult to read since the text cannot be selected for searching dictionary.
+- The goal of this project is to create ebook in text format that replicates the original appearance of the ancient books, supporting annotations and queries, making it convenient to store in ebook-readers for reading anytime. The elegant and immersive reading experience brought by the primitive form of ancient books may attract more readers to enjoy reading ancient literature.
+
+## vRain is  
+
+- vRain是该復刻計劃的主要工具，此外還有古籍印章製作工具 [vYinn殷人](https://github.com/shanleiguang/vYinn) 、古棋譜製作工具 [vQi](https://github.com/shanleiguang/vQi) 、古籍掃描圖像變形糾正工具[vModou墨斗](https://github.com/shanleiguang/vModou)以及其他傳統文化文創工具，如天地人三才傳統曆法筆記本 [v3Cai](https://github.com/shanleiguang/v3CaiPreview)等。
+- vRain是一款面向讀者的中文古籍刻本風格直排電子書製作工具。
+- 參考中文古籍雕版刻本製作過程，首先生成書葉背景圖，根據行數、每行字數形成一個自右向左、自上而下的位置數組，然後把文本逐字打印到對應位置，打滿一頁、新建一頁，直到所有文字處理完。
+- 文本編輯準備和自動排版生成分離，使用者將主要精力用在文本編輯準備。
+- 一個背景圖對應一個配置文件。一本書對應一個配置文件。
+- 百萬字書籍十幾分鐘生成。
+- 採用Perl語言開發，需安裝Image::Magick和PDF::Builder等模塊。
+- 作者小紅書主頁：兀雨書屋。
+
+## Example
+
+![image](https://github.com/shanleiguang/vBooks/blob/main/002.png)
+
+![image](https://github.com/shanleiguang/vRain/blob/main/images/010.png)
+
+![image](https://github.com/shanleiguang/vRain/blob/main/images/014.png)
+
+## 基本功能  
+
+- 書葉背景圖的書房名、尺寸、列數、框線粗細及顏色均可配置。支持單雙、順對、黑白魚尾。
+- 支持生成宣紙做舊風格、竹簡風格的背景圖。
+- 支持批注文字小字雙排。正文、批注文字的字體、大小、顏色、位置可配置。
+- 正文文字、批注文字、標點符號的上、下、左、右位置均可微調以達到最佳呈現效果。
+- 一主多輔字體，主字體不支持時自動採用輔字體補字。某字符主字體不支持時，可嘗試簡繁轉換以改善支持情況，但可能產生與語境不符問題。
 - **多字體補全**：最多 5 種字體按優先級回退，確保生僻字可正常顯示
 - **字體度量微調**：自動測量各字體字形高度差異，微調字號保持視覺大小一致
 - **回退字體加粗**：正文中回退到非主字體的字元可自動疊加描邊模擬加粗效果
-- **夾批雙排**：支援 `【】` 標記的批注文字以小字雙排形式呈現
+- 標點符號替換規則、過濾規則可配置。標點符號可歸一化為句號，僅用於句讀。常用標點符號可設置為不佔字符位置，頁面文字更緊湊，貼近古籍刻本風格。
+- 書名號、單雙引號直排旋轉九十度。書名號可調整為側邊線。
+- 根據文本序號自動生成PDF目錄，如第x回、卷x。
 - **特殊標記系統**：書名波浪線、圓角方框、圓形框、圈注/點注/線注、字體縮放等
-- **自動目錄**：自動提取章回標題生成 PDF 書籤目錄
 - **PDF 壓縮**：可選用 Ghostscript 對輸出 PDF 進行壓縮
+- 保留字符：'@'代表空格，'【】'內代表雙排批注文字，'%'代表換葉符，'$'代表換頁符（半葉），'&'代表下行文字居葉末，文本行首'S+數字'代表整段縮幾個字符（需indentxt腳本做預處理）。
+
+## 赞助支持 Sponsorship
+如果您覺得本工具對您的工作或生活有些微幫助，請給予必要支持，謝謝！  
+![image](https://github.com/shanleiguang/vRain/blob/main/sponsor_new.png)  
 
 ## 系統需求
 
@@ -28,18 +67,6 @@ vRain（兀雨）是一個 Perl 工具鏈，可將中文文本生成為古籍刻
 - **Font::FreeType** — 字體字形檢測與度量
 - **Image::Magick** — 背景圖生成（`canvas/*.pl` 指令碼使用）
 - **Ghostscript** (`gs`) — PDF 壓縮（`-c` 參數，僅 macOS）
-
-### 安裝依賴
-
-```bash
-# macOS（Homebrew）
-brew install perl imagemagick ghostscript
-cpan install PDF::Builder Font::FreeType
-
-# Linux（Debian/Ubuntu）
-sudo apt-get install perl imagemagick ghostscript
-cpan install PDF::Builder Font::FreeType
-```
 
 ## 快速開始
 
@@ -52,12 +79,6 @@ perl vrain.pl -b 00 -f 1 -t 80
 
 # 測試模式：僅輸出 5 頁用於調參，生成帶 _test 標識的 PDF
 perl vrain.pl -b 00 -f 1 -t 80 -z 5
-
-# 生成後自動用 Ghostscript 壓縮 PDF（僅 macOS）
-perl vrain.pl -b 00 -f 1 -t 80 -c
-
-# 顯示詳細排版資訊
-perl vrain.pl -b 00 -v
 ```
 
 ### 生成背景圖
