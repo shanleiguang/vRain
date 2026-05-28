@@ -4,7 +4,7 @@
 #   vRain（兀雨）— 中文古籍刻本风格直排电子书制作工具
 #   Chinese Ancient Book-Style Vertical PDF E-book Generator
 #
-#   Version:    v1.5
+#   Version:    v1.5.1
 #   Author:     shanleiguang <shanleiguang@gmail.com>
 #   GitHub:     https://github.com/shanleiguang/vRain
 #   License:    MIT
@@ -41,7 +41,7 @@ binmode(STDOUT, ':encoding(utf8)');
 binmode(STDERR, ':encoding(utf8)');
 
 my $software = 'vRain';
-my $version = 'v1.5';
+my $version = 'v1.5.1';
 
 # ============================================================================
 # 程序输入参数设置与初始化
@@ -243,9 +243,9 @@ print "\t（）正文大小缩放：$if_tagtz\n";
 print "\t｛｝正文右侧圈注：$if_tagcn\n";
 print "\t＜＞正文右侧点注：$if_tagpn\n";
 print "\t［］正文右侧线注：$if_tagln\n";
-    print "\t字体度量微调：$if_font_metric_adjust\n";
+print "\t字体度量微调：$if_font_metric_adjust\n";
+print "\t回退字体加粗：$if_fallback_bold\t描边宽度：$fallback_bold_stroke_width\n";
 print '-'x60, "\n";
-    print "\t回退字体加粗：$if_fallback_bold\t描边宽度：$fallback_bold_stroke_width\n";
 
 # ============================================================================
 # 计算排版座标网格
@@ -422,15 +422,15 @@ $vfonts{$fn3} = $vpdf->ttfont("fonts/$fn3", -noembed=>0, -nosubset=>1) if($fn3);
 $vfonts{$fn4} = $vpdf->ttfont("fonts/$fn4", -noembed=>0, -nosubset=>1) if($fn4);
 $vfonts{$fn5} = $vpdf->ttfont("fonts/$fn5", -noembed=>0, -nosubset=>1) if($fn5);
 
-    #字体度量微调：预计算各字体缩放因子
-    if ($if_font_metric_adjust) {
-        compute_font_scales($tfns[0], '国', 100);
-        print "\t字体缩放因子：";
-        for my $f (keys %font_scale) {
-            printf "%s => %.4f ", $f, $font_scale{$f};
-        }
-        print "\n";
+#字体度量微调：预计算各字体缩放因子
+if ($if_font_metric_adjust) {
+    compute_font_scales($tfns[0], '国', 100);
+    print "字体缩放因子：\n";
+    for my $f (keys %font_scale) {
+        printf "\t%s => %.4f\n", $f, $font_scale{$f};
     }
+}
+print '-'x60, "\n";
 
 
 #添加PDF文档信息
@@ -691,7 +691,12 @@ foreach my $tid ($from..$to) {
                     $fy+= $fsize/2;
                     $fdgrees = -90;
                 }
-                $vpage->text()->textlabel($fx, $fy, $vfonts{$fn}, $fsize, $rc, -rotate => $fdgrees, -color => $fcolor);
+                if ($if_fallback_bold && $fn ne $tfns[0]) {
+                    $vpage->gfx()->linewidth($fallback_bold_stroke_width);
+                    $vpage->text()->textlabel($fx, $fy, $vfonts{$fn}, $fsize, $rc, -rotate => $fdgrees, -color => $fcolor, -render => 2, -strokecolor => $fcolor);
+                } else {
+                    $vpage->text()->textlabel($fx, $fy, $vfonts{$fn}, $fsize, $rc, -rotate => $fdgrees, -color => $fcolor);
+                }
                 @rlast = @$rpref;
                 $last_char = $rc;
             }
@@ -780,9 +785,11 @@ foreach my $tid ($from..$to) {
                     $grect->rect($fx+$ilw, $fy+$rh+$ovm-$olw-$ilw, int($cw-$ilw*2)+1, $rh+$ovm*2); #覆盖下边
                     $grect->fill();
                     #打印前进一格的字符
+                    $char = shift @chars;
+                    $fn = get_font($char, \@tfns);
+                    ($fsize, $fcolor, $fdgrees)  = ($fonts{$fn}->[0], $text_font_color, $fonts{$fn}->[2]);
                     $fy+= $rh;
                     $fx+= ($cw-$fsize)/2;
-                    $char = shift @chars;
                     $vpage->text()->textlabel($fx, $fy+$ovm, $vfonts{$fn}, $fsize, $char, -rotate => $fdgrees, -color => $fcolor);
                     $pcnt--;
                     next;
