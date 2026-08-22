@@ -591,12 +591,7 @@ foreach my $tid ($from..$to) {
             } else {
                 $cnt = int(($#rcstmp+1)/2)+1;
             }
-            my $pcol;
-            if($pcnt+1 % $row_num == 0) { #+1，否则挂死，原因待定
-                $pcol = $pcnt/$row_num;
-            } else {
-                $pcol = int($pcnt/$row_num)+1;
-            }
+            my $pcol = int($pcnt/$row_num)+1;
             #是否跨列
             if($pcnt+$cnt <= $pcol*$row_num) {
                 @r_pos = (@pos_r[$pcnt+1..$pcnt+$cnt], @pos_l[$pcnt+1..$pcnt+$cnt]);
@@ -771,14 +766,14 @@ foreach my $tid ($from..$to) {
                     #采用填充覆盖法绘制边框更易实现对齐
                     #外粗线框延伸
                     $grect->move($fx, $fy);
-                    $grect->fillcolor('black');
+                    $grect->fillcolor($olc);
                     $grect->rect($fx-$ohm-$olw, $fy+$rh+$ovm*2, int($cw+$ohm*2+$olw*2)+1, $rh+$ovm*2);
                     $grect->fill();
                     $grect->fillcolor('white');
                     $grect->rect(int($fx-$ohm+1), $fy+$rh, int($cw+$ohm*2+0.5), $rh+$ovm*2); #覆盖下边
                     $grect->fill();
                     #内细线框延伸
-                    $grect->fillcolor('black');
+                    $grect->fillcolor($ilc);
                     $grect->rect($fx, $fy+$rh+$ovm-$olw, int($cw)+1, $rh+$ovm*2);
                     $grect->fill();
                     $grect->fillcolor('white');
